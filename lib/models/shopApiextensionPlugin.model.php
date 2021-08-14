@@ -24,14 +24,16 @@ class shopApiextensionPluginModel extends waModel
     public function reviewsCount($product_ids)
     {
         $sqlCount = "SELECT product_id, COUNT(id) AS reviews_count FROM `{$this->shop_product_reviews}`
-                WHERE review_id = 0 AND status = '".self::STATUS_PUBLISHED."' AND product_id IN($product_ids) GROUP BY product_id";
+                WHERE review_id = 0 AND status = '".self::STATUS_PUBLISHED."' AND product_id IN(s:ids) GROUP BY product_id";
 
         $sqlImagesCount = "SELECT p.rating, r.product_id, SUM(images_count) as images_count FROM `{$this->shop_product_reviews}` as r
                 LEFT JOIN `{$this->shop_product}` as p on p.id = r.product_id
-                WHERE r.status = '".self::STATUS_PUBLISHED."' AND r.product_id IN($product_ids) GROUP BY r.product_id";
+                WHERE r.status = '".self::STATUS_PUBLISHED."' AND r.product_id IN(s:ids) GROUP BY r.product_id";
 
-        $reviewsCount = $this->query($sqlCount)->fetchAll('product_id');
-        $reviewsImagesCount = $this->query($sqlImagesCount)->fetchAll('product_id');
+        $reviewsCount =
+            $this->query($sqlCount, array('ids' => explode(',', $product_ids)))->fetchAll('product_id');
+        $reviewsImagesCount =
+            $this->query($sqlImagesCount, array('ids' => explode(',', $product_ids)))->fetchAll('product_id');
 
         foreach($reviewsCount as $id=>$r) {
             $reviewsCount[$id] = $r;
@@ -62,7 +64,7 @@ class shopApiextensionPluginModel extends waModel
      */
     public function productImages($product_ids)
     {
-        $sql = "SELECT * FROM `{$this->shop_product_images}` WHERE product_id IN($product_ids) ORDER BY sort";
-        return $this->query($sql)->fetchAll();
+        $sql = "SELECT * FROM `{$this->shop_product_images}` WHERE product_id IN(s:ids) ORDER BY sort";
+        return $this->query($sql, array('ids' => explode(',', $product_ids)))->fetchAll();
     }
 }
