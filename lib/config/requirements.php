@@ -9,7 +9,7 @@
 return array(
     'app.shop' => array(
         'strict' => true,
-        'version' => '>=6.0',
+        'version' => '>=8.0',
     ),
     'php' => array(
         'strict' => true,
@@ -23,6 +23,6 @@ return array(
     ),
     'app.installer' => array(
         'strict' => true,
-        'version' => '>=1.7.6',
+        'version' => '>=1.8.3',
     ),
 );
