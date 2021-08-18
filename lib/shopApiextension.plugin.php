@@ -48,6 +48,8 @@ class shopApiextensionPlugin extends shopPlugin
      * Получить фото товаров
      * @param $product_ids - список ид товаров
      * @return array
+     * @throws waDbException
+     * @throws waException
      */
     static function productImages($product_ids)
     {
@@ -67,4 +69,22 @@ class shopApiextensionPlugin extends shopPlugin
         $apiextensionHelper = new shopApiextensionPluginHelper();
         return $apiextensionHelper->filtersForCategory($category_id);
     }
+
+    /**
+     * HOOK frontend_review_add.after
+     * @param $params
+     * @throws waDbException
+     * @throws waException
+     */
+    public function frontendReviewAddAfter($params)
+    {
+        /**
+         * Добавляем поля только для отзыва и если разрешено в настройках плагина
+         */
+        if($this->getSettings('review_fields') && $params['data']['parent_id'] == 0) {
+            $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
+            $apiextensionReviewsHelper->reviewAddFields($params['id']);
+        }
+    }
+
 }

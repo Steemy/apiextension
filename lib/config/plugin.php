@@ -7,15 +7,18 @@
  */
 
 return array(
-    'name'          => 'Расширение апи магазина',
-    'description'   => 'Расширение апи магазина',
-    'version'       => '1.0.0',
-	'vendor'        => '989788',
-    'img'           => 'img/icon.svg',
-    'shop_settings' => true,
-    'icons'         => array
+    'name'            => 'Расширение функционала',
+    'description'     => 'Дополнительный функционал магазина',
+    'version'         => '1.0.1',
+	'vendor'          => '989788',
+    'img'             => 'img/icon.svg',
+    'shop_settings'   => true,
+    'custom_settings' => true,
+    'handlers'        => array(
+        'frontend_review_add.after' => 'frontendReviewAddAfter',
+    ),
+    'icons'           => array
         (
             16 => 'img/icon.svg',
         ),
-    'handlers'      => array(),
 ) ;

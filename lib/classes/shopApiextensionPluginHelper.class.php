@@ -31,6 +31,10 @@ class shopApiextensionPluginHelper
      */
     public function reviewsCount($product_ids)
     {
+        if(!is_array($product_ids)) {
+            $product_ids = explode(',', $product_ids);
+        }
+
         return $this->apiextensionModel->reviewsCount($product_ids);
     }
 
@@ -38,11 +42,24 @@ class shopApiextensionPluginHelper
      * Получить фото товаров
      * @param $product_ids - список ид товаров
      * @return array
+     * @throws waDbException
+     * @throws waException
      */
     public function productImages($product_ids)
     {
         $productImages = array();
-        $productImagesAll = $this->apiextensionModel->productImages($product_ids);
+        $productImagesModel = new shopProductImagesModel();
+
+        if(is_array($product_ids)) {
+            $product_ids = implode(',', $product_ids);
+        }
+
+        $productImagesAll =
+            $productImagesModel
+                ->select('*')
+                ->where('product_id IN(' . $product_ids . ')')
+                ->order('sort ASC')
+                ->fetchAll();
 
         foreach($productImagesAll as $image) {
             $productImages[$image['product_id']][$image['id']] = $image;
@@ -92,7 +109,6 @@ class shopApiextensionPluginHelper
         );
     }
 
-
     /**
      * Получить активный фильтр товаров для категории
      * @param $category_id - идентификатор категории
@@ -122,9 +138,16 @@ class shopApiextensionPluginHelper
         }
 
         $category_result['category'] = $category;
+        $filters = array();
 
-        if ($category['filter']) {
-            $filter_ids = explode(',', $category['filter']);
+        if ($category['filter'] || !empty($category['smartfilters'])) {
+            if(!empty($category['smartfilters'])) {
+                $filter_ids = explode(',', $category['smartfilters']);
+                $filter_names = explode(',', $category['smartfilters_name']);
+            } else {
+                $filter_ids = explode(',', $category['filter']);
+            }
+
             $feature_model = new shopFeatureModel();
             $features = $feature_model->getById(array_filter($filter_ids, 'is_numeric'));
             if ($features) {
@@ -134,7 +157,7 @@ class shopApiextensionPluginHelper
             $collection = new shopProductsCollection('category/' . $category_id);
             $category_value_ids = $collection->getFeatureValueIds(false);
 
-            foreach ($filter_ids as $fid) {
+            foreach ($filter_ids as $k => $fid) {
                 if ($fid == 'price') {
                     $range = $collection->getPriceRange();
                     if ($range['min'] != $range['max']) {
@@ -144,6 +167,9 @@ class shopApiextensionPluginHelper
                         );
                     }
                 } elseif (isset($features[$fid]) && isset($category_value_ids[$fid])) {
+                    if(!empty($filter_names[$k])) {
+                        $features[$fid]['name'] = $filter_names[$k];
+                    }
                     //set feature data
                     $filters[$fid] = $features[$fid];
 

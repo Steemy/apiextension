@@ -13,7 +13,6 @@ class shopApiextensionPluginModel extends waModel
 
     private $shop_product_reviews = 'shop_product_reviews';
     private $shop_customer = 'shop_customer';
-    private $shop_product_images = 'shop_product_images';
     private $shop_product = 'shop_product';
 
     /**
@@ -31,9 +30,9 @@ class shopApiextensionPluginModel extends waModel
                 WHERE r.status = '".self::STATUS_PUBLISHED."' AND r.product_id IN(s:ids) GROUP BY r.product_id";
 
         $reviewsCount =
-            $this->query($sqlCount, array('ids' => explode(',', $product_ids)))->fetchAll('product_id');
+            $this->query($sqlCount, array('ids' => $product_ids))->fetchAll('product_id');
         $reviewsImagesCount =
-            $this->query($sqlImagesCount, array('ids' => explode(',', $product_ids)))->fetchAll('product_id');
+            $this->query($sqlImagesCount, array('ids' => $product_ids))->fetchAll('product_id');
 
         foreach($reviewsCount as $id=>$r) {
             $reviewsCount[$id] = $r;
@@ -55,16 +54,5 @@ class shopApiextensionPluginModel extends waModel
     {
         $sql = "SELECT affiliate_bonus FROM `{$this->shop_customer}` WHERE contact_id=?";
         return $this->query($sql, (int)$contact_id)->fetchField();
-    }
-
-    /**
-     * Получить фото товаров
-     * @param $product_ids - список ид товаров
-     * @return array
-     */
-    public function productImages($product_ids)
-    {
-        $sql = "SELECT * FROM `{$this->shop_product_images}` WHERE product_id IN(s:ids) ORDER BY sort";
-        return $this->query($sql, array('ids' => explode(',', $product_ids)))->fetchAll();
     }
 }

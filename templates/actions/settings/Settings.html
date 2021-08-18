@@ -1,8 +1,54 @@
-<div class="block double-padded align-center gray">
-    <p>
-        <strong>Плагин «Расширение апи магазина» установлен и работает.</strong>
-        <br>
-        <br>
-        Текущих натсроек нет!
+<link rel="stylesheet" href="{$wa_url}wa-apps/shop/plugins/apiextension/css/backend.css" />
+
+<h1>Дополнительный функционал магазина</h1>
+
+{literal}
+    <p class="gray">
+        <b>{shopApiextensionPlugin::affiliateBonus($contact_id)}</b> - количество бонусов авторизованного пользователя<br />
+        <b>{shopApiextensionPlugin::reviewsCount($product_ids)}</b> - количество отзывов для товаров<br />
+        <b>{shopApiextensionPlugin::categoryProducts($category_id, $limit)}</b> - товары категории, в фильтрации товаров участвуют все гет параметры фильтра и пагинации<br />
+        <b>{shopApiextensionPlugin::productImages($product_ids)}</b> - фото для товаров<br />
+        <b>{shopApiextensionPlugin::filtersForCategory($category_id)}</b> - активный фильтр товаров для категории<br />
+        <b>Дополнительные поля для отзывов</b> - в форме добавления отзыва нужно добавить поля
+        input c name=apiextension_experience,apiextension_dignity,apiextension_limitations.<br />
+        После этого в новых отзывах будут доступные переменные
+        $review.apiextension_experience, $review.apiextension_dignity, $review.apiextension_limitations
     </p>
+{/literal}
+
+<div class="fields form plugins plugins_belllight">
+    <form action="" method="post">
+        {$wa->csrf()}
+        <ul class="tabs">
+            <li class="selected"><a href="#/belllight/">[`Settings`]</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="block top-padded">
+                <div class="field">
+                    <div class="name">Доп. поля для отзывов:</div>
+                    <div class="value">
+                        <div class="ibutton-checkbox">
+                            <ul class="menu-h">
+                                <li><span id="switcher-off-label">Нет</span></li>
+                                <li><input class="switcher" type="checkbox" name="shop_plugins[review_fields]"{if $settings.review_fields} checked="checked"{/if} value="1" /></li>
+                                <li><span id="switcher-on-label">Да</span></li>
+                            </ul>
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <p><br /></p>
+            </div>
+        </div>
+
+        <div id="s-product-edit-save-panel" style="display: block;">
+            <div class="block bordered-top" style="padding-left:225px;">
+                <input type="submit" class="button green plugins__save" value="Сохранить" style="margin-right:10px;">
+                <em class="errormsg" style="display:inline-block;"></em>
+            </div>
+        </div>
+    </form>
 </div>
+
+
+<script src="{$wa_url}wa-apps/shop/plugins/apiextension/js/backend.js"></script>
