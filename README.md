@@ -27,3 +27,10 @@
 <p>
   <b>shopApiextensionPlugin::filtersForCategory($category_id)</b> - активный фильтр товаров для категории
 </p>
+
+<p>
+<b>Дополнительные поля для отзывов</b> - в форме добавления отзыва нужно добавить поля
+input c name=apiextension_experience,apiextension_dignity,apiextension_limitations.<br />
+После этого в новых отзывах будут доступные переменные
+$review.apiextension_experience, $review.apiextension_dignity, $review.apiextension_limitations.
+</p>
