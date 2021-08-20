@@ -25,3 +25,9 @@ try {
 } catch(waDbException $e) {
     waLog::log('Unable to remove "apiextension_limitations" column.');
 }
+
+try {
+    $model->query('ALTER TABLE `shop_product_reviews` ADD `apiextension_recommend` INT(1) NULL AFTER `text`');
+} catch(waDbException $e) {
+    waLog::log('Unable to remove "apiextension_recommend" column.');
+}

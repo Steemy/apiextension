@@ -18,6 +18,7 @@ class shopApiextensionPluginHelper
      * Получить количество бонусов авторизованного пользователя
      * @param $contact_id - идентификатор пользователя
      * @return bool|mixed
+     * @throws waDbException
      */
     public function affiliateBonus($contact_id)
     {
@@ -28,6 +29,7 @@ class shopApiextensionPluginHelper
      * Получить количество отзывов для товаров
      * @param $product_ids - список ид товаров
      * @return array
+     * @throws waDbException
      */
     public function reviewsCount($product_ids)
     {
