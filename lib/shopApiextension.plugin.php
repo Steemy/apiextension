@@ -83,8 +83,21 @@ class shopApiextensionPlugin extends shopPlugin
          */
         if($this->getSettings('review_fields') && $params['data']['parent_id'] == 0) {
             $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
-            $apiextensionReviewsHelper->reviewAddFields($params['id']);
+            $apiextensionReviewsHelper->addAdditionalFieldsReview($params['id']);
         }
     }
 
+    /**
+     * HOOK products_reviews
+     */
+    public function productsReviews($params)
+    {
+        /**
+         * Выводим в админке поля у отзывов
+         */
+        if ($this->getSettings('review_fields') && $params['reviews']) {
+            $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
+            $apiextensionReviewsHelper->showAdditionalFieldsReviewBackend($params['reviews']);
+        }
+    }
 }

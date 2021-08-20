@@ -15,6 +15,7 @@ return array(
     'shop_settings'   => true,
     'custom_settings' => true,
     'handlers'        => array(
+        'products_reviews' => 'productsReviews',
         'frontend_review_add.after' => 'frontendReviewAddAfter',
     ),
     'icons'           => array
