@@ -1,75 +1,13 @@
 <?php
 
 /**
- * Helper class
+ * Helper class shopApiextensionPluginCategoryHelper
  *
- * @author Steemy, created by 21.07.2021
+ * @author Steemy, created by 25.08.2021
  */
 
-class shopApiextensionPluginHelper
+class shopApiextensionPluginCategoryHelper
 {
-    private $apiextensionModel;
-
-    public function __construct(){
-        $this->apiextensionModel = new shopApiextensionPluginModel();
-    }
-
-    /**
-     * Получить количество бонусов авторизованного пользователя
-     * @param $contact_id - идентификатор пользователя
-     * @return bool|mixed
-     * @throws waDbException
-     */
-    public function affiliateBonus($contact_id)
-    {
-        return $this->apiextensionModel->affiliateBonus($contact_id);
-    }
-
-    /**
-     * Получить количество отзывов для товаров
-     * @param $product_ids - список ид товаров
-     * @return array
-     * @throws waDbException
-     */
-    public function reviewsCount($product_ids)
-    {
-        if(!is_array($product_ids)) {
-            $product_ids = explode(',', $product_ids);
-        }
-
-        return $this->apiextensionModel->reviewsCount($product_ids);
-    }
-
-    /**
-     * Получить фото товаров
-     * @param $product_ids - список ид товаров
-     * @return array
-     * @throws waDbException
-     * @throws waException
-     */
-    public function productImages($product_ids)
-    {
-        $productImages = array();
-        $productImagesModel = new shopProductImagesModel();
-
-        if(is_array($product_ids)) {
-            $product_ids = implode(',', $product_ids);
-        }
-
-        $productImagesAll =
-            $productImagesModel
-                ->select('*')
-                ->where('product_id IN(' . $product_ids . ')')
-                ->order('sort ASC')
-                ->fetchAll();
-
-        foreach($productImagesAll as $image) {
-            $productImages[$image['product_id']][$image['id']] = $image;
-        }
-
-        return $productImages;
-    }
-
     /**
      * Получить товары категории
      * в фильтрации товаров участвуют все гет параметры фильтра и пагинации

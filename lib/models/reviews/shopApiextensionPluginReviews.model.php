@@ -1,18 +1,17 @@
 <?php
 
 /**
- * Model class
+ * Model class shopApiextensionPluginReviewsModel
  *
- * @author Steemy, created by 21.07.2021
+ * @author Steemy, created by 25.08.2021
  */
 
 
-class shopApiextensionPluginModel extends waModel
+class shopApiextensionPluginReviewsModel extends waModel
 {
     const STATUS_PUBLISHED = 'approved';
 
     private $shop_product_reviews = 'shop_product_reviews';
-    private $shop_customer = 'shop_customer';
     private $shop_product = 'shop_product';
 
     /**
@@ -44,17 +43,5 @@ class shopApiextensionPluginModel extends waModel
         }
 
         return $reviewsCount;
-    }
-
-    /**
-     * Получить количество бонусов авторизованного пользователя
-     * @param $contact_id - идентификатор пользователя
-     * @return bool|mixed
-     * @throws waDbException
-     */
-    public function affiliateBonus($contact_id)
-    {
-        $sql = "SELECT affiliate_bonus FROM `{$this->shop_customer}` WHERE contact_id=?";
-        return $this->query($sql, (int)$contact_id)->fetchField();
     }
 }

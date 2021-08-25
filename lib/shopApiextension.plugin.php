@@ -12,22 +12,37 @@ class shopApiextensionPlugin extends shopPlugin
      * Получить количество бонусов авторизованного пользователя
      * @param $contact_id - идентификатор пользователя
      * @return bool|mixed
+     * @throws waDbException
      */
     static function affiliateBonus($contact_id)
     {
-        $apiextensionHelper = new shopApiextensionPluginHelper();
-        return $apiextensionHelper->affiliateBonus($contact_id);
+        $apiextensionCustomerHelper = new shopApiextensionPluginCustomerHelper();
+        return $apiextensionCustomerHelper->affiliateBonus($contact_id);
     }
 
     /**
      * Получить количество отзывов для товаров
      * @param $product_ids - список ид товаров
      * @return array
+     * @throws waDbException
      */
     static public function reviewsCount($product_ids)
     {
-        $apiextensionHelper = new shopApiextensionPluginHelper();
-        return $apiextensionHelper->reviewsCount($product_ids);
+        $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
+        return $apiextensionReviewsHelper->reviewsCount($product_ids);
+    }
+
+    /**
+     * Получить фото товаров
+     * @param $product_ids - список ид товаров
+     * @return array
+     * @throws waDbException
+     * @throws waException
+     */
+    static function productImages($product_ids)
+    {
+        $apiextensionProductHelper = new shopApiextensionPluginProductHelper();
+        return $apiextensionProductHelper->productImages($product_ids);
     }
 
     /**
@@ -40,21 +55,8 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static function categoryProducts($category_id, $limit=NULL)
     {
-        $apiextensionHelper = new shopApiextensionPluginHelper();
-        return $apiextensionHelper->categoryProducts($category_id, $limit);
-    }
-
-    /**
-     * Получить фото товаров
-     * @param $product_ids - список ид товаров
-     * @return array
-     * @throws waDbException
-     * @throws waException
-     */
-    static function productImages($product_ids)
-    {
-        $apiextensionHelper = new shopApiextensionPluginHelper();
-        return $apiextensionHelper->productImages($product_ids);
+        $apiextensionCategoryHelper = new shopApiextensionPluginCategoryHelper();
+        return $apiextensionCategoryHelper->categoryProducts($category_id, $limit);
     }
 
     /**
@@ -66,8 +68,8 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static function filtersForCategory($category_id)
     {
-        $apiextensionHelper = new shopApiextensionPluginHelper();
-        return $apiextensionHelper->filtersForCategory($category_id);
+        $apiextensionCategoryHelper = new shopApiextensionPluginCategoryHelper();
+        return $apiextensionCategoryHelper->filtersForCategory($category_id);
     }
 
     /**
@@ -98,6 +100,21 @@ class shopApiextensionPlugin extends shopPlugin
         if ($this->getSettings('review_fields') && $params['reviews']) {
             $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
             $apiextensionReviewsHelper->showAdditionalFieldsReviewBackend($params['reviews']);
+        }
+    }
+
+    /**
+     * HOOK controller_after.shopMarketingPromoRuleEditorAction
+     */
+    public function controllerAfterShopMarketingPromoRuleEditorAction(&$params)
+    {
+        /**
+         * Выводим дополнительные поля в маркетинге промо у баннера
+         */
+        $ruleType = waRequest::post('rule_type', null, waRequest::TYPE_STRING_TRIM);
+        if($ruleType == 'banner') {
+            $apiextensionMarketingPromoRuleHelper = new shopApiextensionPluginMarketingPromoRuleHelper();
+            $apiextensionMarketingPromoRuleHelper->showAdditionalFieldsPromoBannerBackend();
         }
     }
 }
