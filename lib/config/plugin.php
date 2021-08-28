@@ -13,6 +13,7 @@ return array(
 	'vendor'          => '989788',
     'img'             => 'img/icon.svg',
     'shop_settings'   => true,
+    'frontend'        => true,
     'custom_settings' => true,
     'handlers'        => array(
         'products_reviews' => 'productsReviews',

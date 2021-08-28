@@ -10,27 +10,21 @@ class shopApiextensionPluginProductHelper
 {
     /**
      * Получить фото товаров
-     * @param $product_ids - список ид товаров
+     * @param $productIds - список ид товаров
      * @return array
      * @throws waDbException
      * @throws waException
      */
-    public function productImages($product_ids)
+    public function productImages($productIds)
     {
         $productImages = array();
         $productImagesModel = new shopProductImagesModel();
 
-        if(is_array($product_ids)) {
-            $product_ids = implode(',', $product_ids);
+        if(!is_array($productIds)) {
+            $productIds = explode(',', $productIds);
         }
 
-        $productImagesAll =
-            $productImagesModel
-                ->select('*')
-                ->where('product_id IN(' . $product_ids . ')')
-                ->order('sort ASC')
-                ->fetchAll();
-
+        $productImagesAll = $productImagesModel->getByField('product_id', $productIds, true);
         foreach($productImagesAll as $image) {
             $productImages[$image['product_id']][$image['id']] = $image;
         }

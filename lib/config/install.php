@@ -31,3 +31,9 @@ try {
 } catch(waDbException $e) {
     $model->query('ALTER TABLE `shop_product_reviews` ADD `apiextension_recommend` INT(1) NULL AFTER `text`');
 }
+
+try {
+    $model->query('SELECT apiextension_votes FROM shop_product_reviews WHERE 0');
+} catch(waDbException $e) {
+    $model->query('ALTER TABLE `shop_product_reviews` ADD `apiextension_votes` VARCHAR(50) NULL AFTER `text`');
+}

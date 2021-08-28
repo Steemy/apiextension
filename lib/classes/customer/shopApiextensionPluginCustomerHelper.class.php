@@ -16,12 +16,12 @@ class shopApiextensionPluginCustomerHelper
 
     /**
      * Получить количество бонусов авторизованного пользователя
-     * @param $contact_id - идентификатор пользователя
+     * @param $contactId - идентификатор пользователя
      * @return bool|mixed
      * @throws waDbException
      */
-    public function affiliateBonus($contact_id)
+    public function affiliateBonus($contactId)
     {
-        return $this->apiextensionCustomerModel->affiliateBonus($contact_id);
+        return $this->apiextensionCustomerModel->affiliateBonus($contactId);
     }
 }

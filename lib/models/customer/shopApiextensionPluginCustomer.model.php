@@ -12,13 +12,13 @@ class shopApiextensionPluginCustomerModel extends waModel
 
     /**
      * Получить количество бонусов авторизованного пользователя
-     * @param $contact_id - идентификатор пользователя
+     * @param $contactId - идентификатор пользователя
      * @return bool|mixed
      * @throws waDbException
      */
-    public function affiliateBonus($contact_id)
+    public function affiliateBonus($contactId)
     {
         $sql = "SELECT affiliate_bonus FROM `{$this->shop_customer}` WHERE contact_id=?";
-        return $this->query($sql, (int)$contact_id)->fetchField();
+        return $this->query($sql, (int)$contactId)->fetchField();
     }
 }

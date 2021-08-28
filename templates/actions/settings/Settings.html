@@ -4,15 +4,18 @@
 
 {literal}
     <p class="gray">
-        <b>{shopApiextensionPlugin::affiliateBonus($contact_id)}</b> - количество бонусов авторизованного пользователя<br />
-        <b>{shopApiextensionPlugin::reviewsCount($product_ids)}</b> - количество отзывов для товаров<br />
+        <b>{shopApiextensionPlugin::affiliateBonus($contactId)}</b> - количество бонусов авторизованного пользователя<br />
+        <b>{shopApiextensionPlugin::reviewsCount($productIds)}</b> - количество отзывов для товаров<br />
         <b>{shopApiextensionPlugin::categoryProducts($category_id, $limit)}</b> - товары категории, в фильтрации товаров участвуют все гет параметры фильтра и пагинации<br />
-        <b>{shopApiextensionPlugin::productImages($product_ids)}</b> - фото для товаров<br />
-        <b>{shopApiextensionPlugin::filtersForCategory($category_id)}</b> - активный фильтр товаров для категории<br />
+        <b>{shopApiextensionPlugin::productImages($productIds)}</b> - фото для товаров<br />
+        <b>{shopApiextensionPlugin::filtersForCategory($categoryId)}</b> - активный фильтр товаров для категории<br />
         <b>Дополнительные поля для отзывов</b> - в форме добавления отзыва нужно добавить поля
         input c name=apiextension_experience,apiextension_dignity,apiextension_limitations,apiextension_recommend.<br />
         После этого в новых отзывах будут доступные переменные
-        $review.apiextension_experience, $review.apiextension_dignity, $review.apiextension_limitations, $review.apiextension_recommend
+        $review.apiextension_experience, $review.apiextension_dignity, $review.apiextension_limitations, $review.apiextension_recommend<br />
+        <b>Голосвание в отзывах</b> - апи рест - apiextension/reviews/vote/ на добавление или удаление голосования<br />
+        принимает параметры _csrf, review_id, apiextension_reviews_vote = array('type'  => 'like' || 'dislike', 'value' => 1 || 0)<br />
+        <b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
     </p>
 {/literal}
 

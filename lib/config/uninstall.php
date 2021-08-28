@@ -27,7 +27,13 @@ try {
 }
 
 try {
-    $model->query('ALTER TABLE `shop_product_reviews` ADD `apiextension_recommend` INT(1) NULL AFTER `text`');
+    $model->query('ALTER TABLE `shop_product_reviews` DROP apiextension_recommend');
+} catch(waDbException $e) {
+    waLog::log('Unable to remove "apiextension_recommend" column.');
+}
+
+try {
+    $model->query('ALTER TABLE `shop_product_reviews` DROP apiextension_votes');
 } catch(waDbException $e) {
     waLog::log('Unable to remove "apiextension_recommend" column.');
 }

@@ -11,14 +11,14 @@ class shopApiextensionPluginCategoryHelper
     /**
      * Получить товары категории
      * в фильтрации товаров участвуют все гет параметры фильтра и пагинации
-     * @param $category_id - идентификатор категории
+     * @param $categoryId - идентификатор категории
      * @param $limit - товаров на странице
      * @return array
      * @throws waException
      */
-    public function categoryProducts($category_id, $limit=NULL)
+    public function categoryProducts($categoryId, $limit=NULL)
     {
-        $collection = new shopProductsCollection('category/'.$category_id);
+        $collection = new shopProductsCollection('category/'.$categoryId);
         $collection->filters(waRequest::get());
 
         $limit = (int)waRequest::cookie('products_page_count', $limit, waRequest::TYPE_INT);
@@ -51,17 +51,17 @@ class shopApiextensionPluginCategoryHelper
 
     /**
      * Получить активный фильтр товаров для категории
-     * @param $category_id - идентификатор категории
+     * @param $categoryId - идентификатор категории
      * @return array
      * @throws waDbException
      * @throws waException
      */
-    public function filtersForCategory($category_id)
+    public function filtersForCategory($categoryId)
     {
         $category_result = array();
 
         $category_model = new shopCategoryModel();
-        $category = $category_model->getById($category_id);
+        $category = $category_model->getById($categoryId);
 
         $category['frontend_url'] = wa()->getRouteUrl('shop/frontend/category', [
             'category_url' => $category['full_url'],
@@ -94,7 +94,7 @@ class shopApiextensionPluginCategoryHelper
                 $features = $feature_model->getValues($features);
             }
 
-            $collection = new shopProductsCollection('category/' . $category_id);
+            $collection = new shopProductsCollection('category/' . $categoryId);
             $category_value_ids = $collection->getFeatureValueIds(false);
 
             foreach ($filter_ids as $k => $fid) {

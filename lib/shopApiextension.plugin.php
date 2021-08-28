@@ -10,66 +10,80 @@ class shopApiextensionPlugin extends shopPlugin
 {
     /**
      * Получить количество бонусов авторизованного пользователя
-     * @param $contact_id - идентификатор пользователя
+     * @param $contactId - идентификатор пользователя
      * @return bool|mixed
      * @throws waDbException
      */
-    static function affiliateBonus($contact_id)
+    static function affiliateBonus($contactId)
     {
         $apiextensionCustomerHelper = new shopApiextensionPluginCustomerHelper();
-        return $apiextensionCustomerHelper->affiliateBonus($contact_id);
+        return $apiextensionCustomerHelper->affiliateBonus($contactId);
     }
 
     /**
      * Получить количество отзывов для товаров
-     * @param $product_ids - список ид товаров
+     * @param $productIds - список ид товаров
      * @return array
      * @throws waDbException
      */
-    static public function reviewsCount($product_ids)
+    static public function reviewsCount($productIds)
     {
         $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
-        return $apiextensionReviewsHelper->reviewsCount($product_ids);
+        return $apiextensionReviewsHelper->reviewsCount($productIds);
     }
 
     /**
      * Получить фото товаров
-     * @param $product_ids - список ид товаров
+     * @param $productIds - список ид товаров
      * @return array
      * @throws waDbException
      * @throws waException
      */
-    static function productImages($product_ids)
+    static function productImages($productIds)
     {
         $apiextensionProductHelper = new shopApiextensionPluginProductHelper();
-        return $apiextensionProductHelper->productImages($product_ids);
+        return $apiextensionProductHelper->productImages($productIds);
     }
 
     /**
      * Получить товары категории
      * в фильтрации товаров участвуют все гет параметры фильтра и пагинации
-     * @param $category_id - идентификатор категории
+     * @param $categoryId - идентификатор категории
      * @param $limit - товаров на странице
      * @return array
      * @throws waException
      */
-    static function categoryProducts($category_id, $limit=NULL)
+    static function categoryProducts($categoryId, $limit=NULL)
     {
         $apiextensionCategoryHelper = new shopApiextensionPluginCategoryHelper();
-        return $apiextensionCategoryHelper->categoryProducts($category_id, $limit);
+        return $apiextensionCategoryHelper->categoryProducts($categoryId, $limit);
     }
 
     /**
      * Получить активный фильтр товаров для категории
-     * @param $category_id - идентификатор категории
+     * @param $categoryId - идентификатор категории
      * @return array
      * @throws waDbException
      * @throws waException
      */
-    static function filtersForCategory($category_id)
+    static function filtersForCategory($categoryId)
     {
         $apiextensionCategoryHelper = new shopApiextensionPluginCategoryHelper();
-        return $apiextensionCategoryHelper->filtersForCategory($category_id);
+        return $apiextensionCategoryHelper->filtersForCategory($categoryId);
+    }
+
+    /**
+     * Получить голосвание клиента по отзывам
+     * @param $reviewIds - список ид отзывов
+     * @param $contactId - идентификатор пользователя
+     * @return array
+     * @throws waDbException
+     * @throws waException
+     */
+    static function getReviewsVote($reviewIds, $contactId = null)
+    {
+        $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
+        return $apiextensionReviewsHelper->getReviewsVote($reviewIds, $contactId);
     }
 
     /**

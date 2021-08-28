@@ -34,3 +34,9 @@ input c name=apiextension_experience,apiextension_dignity,apiextension_limitatio
 После этого в новых отзывах будут доступные переменные
 $review.apiextension_experience, $review.apiextension_dignity, $review.apiextension_limitations, $review.apiextension_recommend
 </p>
+
+<p>
+<b>Голосвание в отзывах</b> - апи рест - apiextension/reviews/vote/ на добавление или удаление голосования<br />
+принимает параметры _csrf, review_id, apiextension_reviews_vote = array('type'  => 'like' || 'dislike', 'value' => 1 || 0)<br />
+<b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
+</p>

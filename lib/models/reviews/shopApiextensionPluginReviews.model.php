@@ -16,11 +16,11 @@ class shopApiextensionPluginReviewsModel extends waModel
 
     /**
      * Получить количество отзывов для товаров
-     * @param $product_ids - список ид товаров
+     * @param $productIds - список ид товаров
      * @return array
      * @throws waDbException
      */
-    public function reviewsCount($product_ids)
+    public function reviewsCount($productIds)
     {
         $sqlCount = "SELECT product_id, COUNT(id) AS reviews_count FROM `{$this->shop_product_reviews}`
                 WHERE review_id = 0 AND status = '".self::STATUS_PUBLISHED."' AND product_id IN(s:ids) GROUP BY product_id";
@@ -30,9 +30,9 @@ class shopApiextensionPluginReviewsModel extends waModel
                 WHERE r.status = '".self::STATUS_PUBLISHED."' AND r.product_id IN(s:ids) GROUP BY r.product_id";
 
         $reviewsCount =
-            $this->query($sqlCount, array('ids' => $product_ids))->fetchAll('product_id');
+            $this->query($sqlCount, array('ids' => $productIds))->fetchAll('product_id');
         $reviewsImagesCount =
-            $this->query($sqlImagesCount, array('ids' => $product_ids))->fetchAll('product_id');
+            $this->query($sqlImagesCount, array('ids' => $productIds))->fetchAll('product_id');
 
         foreach($reviewsCount as $id=>$r) {
             $reviewsCount[$id] = $r;
