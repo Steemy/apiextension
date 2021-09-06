@@ -57,12 +57,17 @@ class shopApiextensionPluginFrontendReviewsVoteController extends waJsonControll
                     $reviewVotesCount = $reviewsModel->getById($reviewId);
                     $votes = json_decode($reviewVotesCount['apiextension_votes'], true);
 
-                    if($reviewVote['vote_like'] != $data['vote_like']) {
-                        $votes['vote_like'] = $data['vote_like'] == 0 ? $votes['vote_like'] - 1 : $votes['vote_like'] + 1;
-                    }
+                    if(isset($votes['vote_like']) && isset($votes['vote_dislike'])) {
+                        if ($reviewVote['vote_like'] != $data['vote_like']) {
+                            $votes['vote_like'] = $data['vote_like'] == 0 ? $votes['vote_like'] - 1 : $votes['vote_like'] + 1;
+                        }
 
-                    if($reviewVote['vote_dislike'] != $data['vote_dislike']) {
-                        $votes['vote_dislike'] = $data['vote_dislike'] == 0 ? $votes['vote_dislike'] - 1 : $votes['vote_dislike'] + 1;
+                        if ($reviewVote['vote_dislike'] != $data['vote_dislike']) {
+                            $votes['vote_dislike'] = $data['vote_dislike'] == 0 ? $votes['vote_dislike'] - 1 : $votes['vote_dislike'] + 1;
+                        }
+                    } else {
+                        $votes['vote_like'] = $data['vote_like'];
+                        $votes['vote_dislike'] = $data['vote_dislike'];
                     }
 
                     $reviewsModel->updateById($reviewId, ['apiextension_votes' => json_encode($votes, JSON_NUMERIC_CHECK)]);
