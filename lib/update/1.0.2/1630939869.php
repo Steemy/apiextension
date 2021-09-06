@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `shop_apiextension_reviews_vote` (
   `vote_like` int(1) NOT NULL DEFAULT 0,
   `vote_dislike` int(1) NOT NULL DEFAULT 0,
   UNIQUE KEY `shop_apiextension_reviews_vote_reviews_id_contact_id` (`review_id`,`contact_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8
 SQL;
     $model->exec($sql);
 
