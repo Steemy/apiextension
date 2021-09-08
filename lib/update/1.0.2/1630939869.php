@@ -28,3 +28,19 @@ try {
 } catch(waDbException $e) {
     $model->query('ALTER TABLE `shop_product_reviews` ADD `apiextension_votes` VARCHAR(50) NULL AFTER `text`');
 }
+
+// Delete old files
+$files = array(
+    wa()->getAppPath("plugins/apiextension/models/shopApiextensionPlugin.model.php", "shop"),
+    wa()->getAppPath("plugins/apiextension/classes/shopApiextensionPluginHelper.class.php", "shop"),
+);
+
+try {
+    foreach ($files as $file) {
+        if (file_exists($file)) {
+            waFiles::delete($file, true);
+        }
+    }
+} catch (Exception $e) {
+
+}

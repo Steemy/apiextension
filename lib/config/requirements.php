@@ -23,6 +23,6 @@ return array(
     ),
     'app.installer' => array(
         'strict' => true,
-        'version' => '>=1.8.3',
+        'version' => '>=2.0.0',
     ),
 );
