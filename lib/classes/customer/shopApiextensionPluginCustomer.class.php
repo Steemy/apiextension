@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Helper class shopApiextensionPluginCustomerHelper
+ * Helper class shopApiextensionPluginCustomer
  *
  * @author Steemy, created by 25.08.2021
  */
 
-class shopApiextensionPluginCustomerHelper
+class shopApiextensionPluginCustomer
 {
     private $apiextensionCustomerModel;
 
@@ -19,9 +19,16 @@ class shopApiextensionPluginCustomerHelper
      * @param $contactId - идентификатор пользователя
      * @return bool|mixed
      * @throws waDbException
+     * @throws waException
      */
     public function affiliateBonus($contactId)
     {
+        if(!wa()->getAuth()->isAuth()) return '';
+
+        if(!$contactId) {
+            $contactId = wa()->getUser()->getId();
+        }
+
         return $this->apiextensionCustomerModel->affiliateBonus($contactId);
     }
 }

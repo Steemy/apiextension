@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Helper class shopApiextensionPluginProductHelper
+ * Helper class shopApiextensionPluginProduct
  *
  * @author Steemy, created by 25.08.2021
  */
 
-class shopApiextensionPluginProductHelper
+class shopApiextensionPluginProduct
 {
     /**
      * Получить фото товаров
@@ -17,6 +17,8 @@ class shopApiextensionPluginProductHelper
      */
     public function productImages($productIds)
     {
+        if(!$productIds) return array();
+
         $productImages = array();
         $productImagesModel = new shopProductImagesModel();
 

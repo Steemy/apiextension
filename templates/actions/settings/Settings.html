@@ -15,7 +15,8 @@
         $review.apiextension_experience, $review.apiextension_dignity, $review.apiextension_limitations, $review.apiextension_recommend<br />
         <b>Голосвание в отзывах</b> - апи рест - apiextension/reviews/vote/ на добавление или удаление голосования<br />
         принимает параметры _csrf, review_id, apiextension_reviews_vote = array('type'  => 'like' || 'dislike', 'value' => 1 || 0)<br />
-        <b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
+        <b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента<br />
+        <b>shopApiextensionPlugin::getProductsForReviewBonus()</b> - товары за которые можно получить бонус за отзыв<br />
     </p>
 {/literal}
 
@@ -24,6 +25,7 @@
         {$wa->csrf()}
         <ul class="tabs">
             <li class="selected"><a href="#/apiextension/">[`Settings`]</a></li>
+            <li><a href="#/apiextension/">Бонусы за отзывы</a></li>
         </ul>
         <div class="tab-content">
             <div class="block top-padded">
@@ -40,6 +42,113 @@
                         </div>
                     </div>
                 </div>
+                <p><br /></p>
+            </div>
+
+            <div class="block top-padded">
+                <p class="hint">Бонус за отзыв работает только после того как заказ будет выполнен, если клиент раньше оставит отзыв, то начисления не будет</p>
+                <div class="field">
+                    <div class="name">Бонусы за отзывы</div>
+                    <div class="value">
+                        <div class="ibutton-checkbox">
+                            <ul class="menu-h">
+                                <li><span id="switcher-off-label">Нет</span></li>
+                                <li><input class="switcher" type="checkbox" name="shop_plugins[bonus_for_review_status]"{if $settings.bonus_for_review_status} checked="checked"{/if} value="1" /></li>
+                                <li><span id="switcher-on-label">Да</span></li>
+                            </ul>
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">Бонус за отзыв общий</div>
+                    <div class="value">
+                        <input type="text" name="shop_plugins[bonus_for_review_all]" value="{$settings.bonus_for_review_all}" />
+                        <select name="shop_plugins[bonus_for_review_all_type]" style="max-width:150px;">
+                            <option value="number" {if $settings.bonus_for_review_all_type == 'number'} selected="selected"{/if}>
+                                число
+                            </option>
+                            <option value="percent" {if $settings.bonus_for_review_all_type == 'percent'} selected="selected"{/if}>
+                                % от цена товара
+                            </option>
+                        </select>
+
+                        <select name="shop_plugins[bonus_for_review_all_round]" style="max-width:150px;">
+                            <option value="round_no" {if $settings.bonus_for_review_all_round == 'round_no'} selected="selected"{/if}>
+                                Не округлять
+                            </option>
+                            <option value="round_up" {if $settings.bonus_for_review_all_round == 'round_up'} selected="selected"{/if}>
+                                Округлять вверх
+                            </option>
+                            <option value="round_down" {if $settings.bonus_for_review_all_round == 'round_down'} selected="selected"{/if}>
+                                Округлять вниз
+                            </option>
+                        </select>
+
+                        <p class="hint">укажите значение и будет начисляться бонус за любой отзыв на товар</p>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">Сколько дней на отзыв</div>
+                    <div class="value">
+                        <input type="text" name="shop_plugins[bonus_for_review_days]" value="{$settings.bonus_for_review_days}" />
+                        <p class="hint">сколько дается клиенту времени на написание отзыва</p>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">Текст для партнерской программы ()</div>
+                    <div class="value">
+                        <input type="text" name="shop_plugins[bonus_text]" value="{$settings.bonus_text}" />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">Текст для партнерской программы</div>
+                    <div class="value">
+                        <input type="text" name="shop_plugins[bonus_text_cancel]" value="{$settings.bonus_text_cancel}" />
+                    </div>
+                </div>
+
+                <h2>Бонусы по категориям</h2>
+
+                {if !empty($categories)}
+                    <table class="zebra zebra-input">
+                        {foreach $categories as $c}
+                            <tr>
+                                <td width="30%"{if $c.depth==0} style="font-weight:bold;"{/if}>{"- "|str_repeat:$c.depth} {$c.name|escape}</td>
+                                <td>
+                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$c.id}][bonus]" value="{if !empty($settings.bonus_by_category[{$c.id}].bonus)}{$settings.bonus_by_category[{$c.id}].bonus}{/if}"
+                                           style="max-width:70px;">
+
+                                    <select name="shop_plugins[bonus_by_category][{$c.id}][type]" style="max-width:150px;">
+                                        <option value="number"
+                                                {if !empty($settings.bonus_by_category[{$c.id}].type)
+                                        && $settings.bonus_by_category[{$c.id}].type == 'number'} selected="selected"{/if}>
+                                            число</option>
+                                        <option value="percent"
+                                                {if !empty($settings.bonus_by_category[{$c.id}].type)
+                                        && $settings.bonus_by_category[{$c.id}].type== 'percent'} selected="selected"{/if}>
+                                            % от цена товара</option>
+                                    </select>
+
+                                    <select name="shop_plugins[bonus_by_category][{$c.id}][round]" style="max-width:150px;">
+                                        <option value="round_no"
+                                                {if !empty($settings.bonus_by_category[{$c.id}].round)
+                                        && $settings.bonus_by_category[{$c.id}].round == 'round_no'} selected="selected"{/if}>
+                                            Не округлять</option>
+                                        <option value="round_up"
+                                                {if !empty($settings.bonus_by_category[{$c.id}].round)
+                                        && $settings.bonus_by_category[{$c.id}].round == 'round_up'} selected="selected"{/if}>
+                                            Округлять вверх</option>
+                                        <option value="round_down"
+                                                {if !empty($settings.bonus_by_category[{$c.id}].round)
+                                        && $settings.bonus_by_category[{$c.id}].round == 'round_down'} selected="selected"{/if}>
+                                            Округлять вниз</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </table>
+                {/if}
                 <p><br /></p>
             </div>
         </div>

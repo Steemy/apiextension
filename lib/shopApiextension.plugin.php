@@ -13,11 +13,12 @@ class shopApiextensionPlugin extends shopPlugin
      * @param $contactId - идентификатор пользователя
      * @return bool|mixed
      * @throws waDbException
+     * @throws waException
      */
-    static function affiliateBonus($contactId)
+    static function affiliateBonus($contactId=null)
     {
-        $apiextensionCustomerHelper = new shopApiextensionPluginCustomerHelper();
-        return $apiextensionCustomerHelper->affiliateBonus($contactId);
+        $apiextensionCustomer = new shopApiextensionPluginCustomer();
+        return $apiextensionCustomer->affiliateBonus($contactId);
     }
 
     /**
@@ -28,8 +29,8 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static public function reviewsCount($productIds)
     {
-        $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
-        return $apiextensionReviewsHelper->reviewsCount($productIds);
+        $apiextensionReviews = new shopApiextensionPluginReviews();
+        return $apiextensionReviews->reviewsCount($productIds);
     }
 
     /**
@@ -41,8 +42,8 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static function productImages($productIds)
     {
-        $apiextensionProductHelper = new shopApiextensionPluginProductHelper();
-        return $apiextensionProductHelper->productImages($productIds);
+        $apiextensionProduct = new shopApiextensionPluginProduct();
+        return $apiextensionProduct->productImages($productIds);
     }
 
     /**
@@ -55,8 +56,8 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static function categoryProducts($categoryId, $limit=NULL)
     {
-        $apiextensionCategoryHelper = new shopApiextensionPluginCategoryHelper();
-        return $apiextensionCategoryHelper->categoryProducts($categoryId, $limit);
+        $apiextensionCategory = new shopApiextensionPluginCategory();
+        return $apiextensionCategory->categoryProducts($categoryId, $limit);
     }
 
     /**
@@ -68,8 +69,8 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static function filtersForCategory($categoryId)
     {
-        $apiextensionCategoryHelper = new shopApiextensionPluginCategoryHelper();
-        return $apiextensionCategoryHelper->filtersForCategory($categoryId);
+        $apiextensionCategory = new shopApiextensionPluginCategory();
+        return $apiextensionCategory->filtersForCategory($categoryId);
     }
 
     /**
@@ -82,39 +83,82 @@ class shopApiextensionPlugin extends shopPlugin
      */
     static function getReviewsVote($reviewIds, $contactId = null)
     {
-        $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
-        return $apiextensionReviewsHelper->getReviewsVote($reviewIds, $contactId);
+        $apiextensionReviews = new shopApiextensionPluginReviews();
+        return $apiextensionReviews->getReviewsVote($reviewIds, $contactId);
     }
 
     /**
-     * HOOK frontend_review_add.after
-     * @param $params
+     * Получить товары за которые можно получить бонус за отзыв
+     * @param $contactId - идентификатор пользователя
+     * @return array
      * @throws waDbException
      * @throws waException
      */
-    public function frontendReviewAddAfter($params)
+    static function getProductsForReviewBonus($contactId)
+    {
+        $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
+        return $apiextensionReviewsAffiliate->getProductsForReviewBonus($contactId);
+    }
+
+    /**
+     * HOOK frontend_review_add.before
+     * @param $params
+     */
+    public function frontendReviewAddBefore($params)
     {
         /**
          * Добавляем поля только для отзыва и если разрешено в настройках плагина
          */
-        if($this->getSettings('review_fields') && $params['data']['parent_id'] == 0) {
-            $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
-            $apiextensionReviewsHelper->addAdditionalFieldsReview($params['id']);
-        }
+        $apiextensionReviews = new shopApiextensionPluginReviews();
+        $apiextensionReviews->addAdditionalFields($params);
     }
 
     /**
-     * HOOK products_reviews
+     * HOOK frontend_review_add.after
+     */
+    public function frontendReviewAddAfter($params)
+    {
+        /**
+         * Бонус за отзыв
+         */
+        $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
+        $apiextensionReviewsAffiliate->addBonusesByWritingReview($params);
+    }
+
+    /**
+     * HOOK products_reviews backend
      */
     public function productsReviews($params)
     {
         /**
          * Выводим в админке поля у отзывов
          */
-        if ($this->getSettings('review_fields') && $params['reviews']) {
-            $apiextensionReviewsHelper = new shopApiextensionPluginReviewsHelper();
-            $apiextensionReviewsHelper->showAdditionalFieldsReviewBackend($params['reviews']);
-        }
+        $apiextensionReviews = new shopApiextensionPluginReviews();
+        $apiextensionReviews->showAdditionalFieldsReviewBackend($params);
+    }
+
+    /**
+     * HOOK order_action.complete
+     */
+    public function orderActionСomplete($params)
+    {
+        /**
+         * При переводе заказа в статус выполенено, делаем запись о возможности поулчить бонусы за отзыв
+         */
+        $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
+        $apiextensionReviewsAffiliate->addAffiliateWhenOrderComplete($params);
+    }
+
+    /**
+     * HOOK order_action.refund
+     */
+    public function orderActionRefund($params)
+    {
+        /**
+         * При возврате заказа, списываем бонусы у клиента
+         */
+        $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
+        $apiextensionReviewsAffiliate->cancelAffiliateWhenOrderRefund($params);
     }
 
     /**
@@ -125,10 +169,7 @@ class shopApiextensionPlugin extends shopPlugin
         /**
          * Выводим дополнительные поля в маркетинге промо у баннера
          */
-        $ruleType = waRequest::post('rule_type', null, waRequest::TYPE_STRING_TRIM);
-        if($ruleType == 'banner') {
-            $apiextensionMarketingPromoRuleHelper = new shopApiextensionPluginMarketingPromoRuleHelper();
-            $apiextensionMarketingPromoRuleHelper->showAdditionalFieldsPromoBannerBackend();
-        }
+        $apiextensionMarketingPromoRule = new shopApiextensionPluginMarketingPromoRule();
+        $apiextensionMarketingPromoRule->showAdditionalFieldsPromoBannerBackend();
     }
 }

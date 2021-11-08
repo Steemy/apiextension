@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Helper class shopApiextensionPluginCategoryHelper
+ * Helper class shopApiextensionPluginCategory
  *
  * @author Steemy, created by 25.08.2021
  */
 
-class shopApiextensionPluginCategoryHelper
+class shopApiextensionPluginCategory
 {
     /**
      * Получить товары категории
@@ -18,6 +18,8 @@ class shopApiextensionPluginCategoryHelper
      */
     public function categoryProducts($categoryId, $limit=NULL)
     {
+        if(!$categoryId) return array();
+
         $collection = new shopProductsCollection('category/'.$categoryId);
         $collection->filters(waRequest::get());
 
@@ -58,6 +60,8 @@ class shopApiextensionPluginCategoryHelper
      */
     public function filtersForCategory($categoryId)
     {
+        if(!$categoryId) return array();
+
         $category_result = array();
 
         $category_model = new shopCategoryModel();
@@ -78,7 +82,9 @@ class shopApiextensionPluginCategoryHelper
         }
 
         $category_result['category'] = $category;
+        $filter_data = waRequest::get();
         $filters = array();
+        $feature_map = array();
 
         if ($category['filter'] || !empty($category['smartfilters'])) {
             if(!empty($category['smartfilters'])) {
@@ -110,6 +116,10 @@ class shopApiextensionPluginCategoryHelper
                     if(!empty($filter_names[$k])) {
                         $features[$fid]['name'] = $filter_names[$k];
                     }
+
+                    //set existing feature code with saved filter id
+                    $feature_map[$features[$fid]['code']] = $fid;
+
                     //set feature data
                     $filters[$fid] = $features[$fid];
 
@@ -171,6 +181,86 @@ class shopApiextensionPluginCategoryHelper
                             $filters[$fid]['max'] = $max;
                         }
                     }
+                }
+            }
+        }
+
+        if ($category['type'] == shopCategoryModel::TYPE_DYNAMIC) {
+
+            $conditions = shopProductsCollection::parseConditions($category['conditions']);
+
+            foreach ($conditions as $field => $field_conditions) {
+                switch ($field) {
+                    case 'price':
+                        foreach ($field_conditions as $condition) {
+                            $type = reset($condition);
+                            switch ($type) {
+                                case '>=':
+                                    $min = shop_currency(doubleval(end($condition)), null, null, false);
+
+                                    if (empty($filter_data['price_min'])) {
+                                        $filter_data['price_min'] = $min;
+                                    } else {
+                                        $filter_data['price_min'] = max($min, $filter_data['price_min']);
+                                    }
+
+                                    if (isset($filters['price']['min'])) {
+                                        $filters['price']['min'] = max($filter_data['price_min'], $filters['price']['min']);
+                                    }
+                                    break;
+                                case '<=':
+                                    $max = shop_currency(doubleval(end($condition)), null, null, false);
+                                    if (empty($filter_data['price_max'])) {
+                                        $filter_data['price_max'] = $max;
+                                    } else {
+                                        $filter_data['price_max'] = min($max, $filter_data['price_max']);
+                                    }
+                                    if (isset($filters['price']['max'])) {
+                                        $filters['price']['max'] = min($filter_data['price_max'], $filters['price']['max']);
+                                    }
+                                    break;
+
+                            }
+                        }
+
+                        break;
+                    case 'count':
+                        /**
+                         * count = {array} [2]
+                         * 0 = ">="
+                         * 1 = ""
+                         */
+                        break;
+                    case 'rating':
+                    case 'compare_price':
+                    case 'tag':
+                        break;
+                    default:
+                        if (preg_match('@(\w+)\.(value_id)$@', $field, $matches)) {
+                            $feature_code = $matches[1];
+                            $first_condition = reset($field_conditions);
+
+                            //If first condition is array that is range. Not need this magic (May be) See below comment)
+                            if (!is_array($first_condition)) {
+                                $value_id = array_map('intval', preg_split('@[,\s]+@', end($field_conditions)));
+
+                                $feature_id = ifset($feature_map, $feature_code, $feature_code);
+
+                                if (empty($filter_data[$feature_code])) {
+                                    $filter_data[$feature_code] = $value_id;
+                                }
+
+                                //If you understand what this block does write a comment please.
+                                if (!empty($filters[$feature_id]['values'])) {
+                                    foreach ($filters[$feature_id]['values'] as $_value_id => $_value) {
+                                        if (!in_array($_value_id, $value_id)) {
+                                            unset($filters[$feature_id]['values'][$_value_id]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
                 }
             }
         }

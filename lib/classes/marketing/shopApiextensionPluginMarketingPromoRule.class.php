@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Helper class shopApiextensionPluginMarketingPromoRuleHelper
+ * Helper class shopApiextensionPluginMarketingPromoRule
  *
  * @author Steemy, created by 25.08.2021
  */
 
-class shopApiextensionPluginMarketingPromoRuleHelper
+class shopApiextensionPluginMarketingPromoRule
 {
 
     /**
@@ -14,6 +14,9 @@ class shopApiextensionPluginMarketingPromoRuleHelper
      */
     public function showAdditionalFieldsPromoBannerBackend()
     {
+        $ruleType = waRequest::post('rule_type', null, waRequest::TYPE_STRING_TRIM);
+        if($ruleType != 'banner') return;
+
         $ruleId = waRequest::post('rule_id', null, waRequest::TYPE_INT);
         $options = waRequest::post('options', [], waRequest::TYPE_ARRAY_TRIM);
 

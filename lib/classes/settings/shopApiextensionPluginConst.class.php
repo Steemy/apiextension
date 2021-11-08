@@ -26,8 +26,16 @@ class shopApiextensionPluginConst
     public function getSettingsDefault()
     {
         return array(
-            'review_fields' => 0,
-            'plugin_info'   => wa()->getConfig()->getAppConfig('shop')->getPluginInfo($this->getNamePlugin()),
+            'review_fields'              => 0,
+            'bonus_for_review_status'    => 0,
+            'bonus_for_review_all'       => 0,
+            'bonus_for_review_all_type'  => 'number',
+            'bonus_for_review_all_round' => 'percent',
+            'bonus_for_review_days'      => 30,
+            'bonus_text'                 => 'Бонусы за отзыв о товаре - %s',
+            'bonus_text_cancel'          => 'Отмена бонусов за отзыв о товаре - %s',
+            'bonus_by_category'          => array(),
+            'plugin_info'                => wa()->getConfig()->getAppConfig('shop')->getPluginInfo($this->getNamePlugin()),
         );
     }
 }

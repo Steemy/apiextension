@@ -40,3 +40,7 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 принимает параметры _csrf, review_id, apiextension_reviews_vote = array('type'  => 'like' || 'dislike', 'value' => 1 || 0)<br />
 <b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
 </p>
+
+<p>
+<b>shopApiextensionPlugin::getProductsForReviewBonus()</b> - товары за которые можно получить бонус за отзыв
+</p>

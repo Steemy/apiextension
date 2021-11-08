@@ -15,6 +15,10 @@ class shopApiextensionPluginSettingsAction extends waViewAction
         $settings = $pluginSetting->getSettings();
         $pluginSetting->getSettingsCheck($settings);
 
+        $modelCategory = new shopCategoryModel();
+        $categories = $modelCategory->getFullTree(null, true);
+
+        $this->view->assign("categories", $categories);
         $this->view->assign("settings", $settings);
     }
 }
