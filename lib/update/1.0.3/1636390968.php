@@ -32,13 +32,15 @@ try {
 CREATE TABLE IF NOT EXISTS `shop_apiextension_reviews_affiliate` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `contact_id` int(11) NOT NULL,
+  `review_id` int(11) NOT NULL DEFAULT 0,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `affiliate` int(11) NOT NULL,
   `create_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `state` varchar(32) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `shop_apiextension_review_affiliate_contact_id_product_id_state` (`contact_id`,`product_id`,`state`)
+  KEY `shop_apiextension_review_affiliate_review_id` (`review_id`),
+  KEY `shop_apiextension_review_affiliate_contact_id_product_id_state` (`contact_id`,`product_id`,`state`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8
 SQL;
     $model->exec($sql);

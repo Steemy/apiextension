@@ -64,6 +64,7 @@ class shopApiextensionPlugin extends shopPlugin
      * Получить активный фильтр товаров для категории
      * @param $categoryId - идентификатор категории
      * @return array
+     * @throws ReflectionException
      * @throws waDbException
      * @throws waException
      */
@@ -106,9 +107,7 @@ class shopApiextensionPlugin extends shopPlugin
      */
     public function frontendReviewAddBefore($params)
     {
-        /**
-         * Добавляем поля только для отзыва и если разрешено в настройках плагина
-         */
+        // Добавляем поля только для отзыва и если разрешено в настройках плагина
         $apiextensionReviews = new shopApiextensionPluginReviews();
         $apiextensionReviews->addAdditionalFields($params);
     }
@@ -118,9 +117,7 @@ class shopApiextensionPlugin extends shopPlugin
      */
     public function frontendReviewAddAfter($params)
     {
-        /**
-         * Бонус за отзыв
-         */
+        // Бонус за отзыв
         $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
         $apiextensionReviewsAffiliate->addBonusesByWritingReview($params);
     }
@@ -130,9 +127,7 @@ class shopApiextensionPlugin extends shopPlugin
      */
     public function productsReviews($params)
     {
-        /**
-         * Выводим в админке поля у отзывов
-         */
+        // Выводим в админке поля у отзывов
         $apiextensionReviews = new shopApiextensionPluginReviews();
         $apiextensionReviews->showAdditionalFieldsReviewBackend($params);
     }
@@ -142,9 +137,7 @@ class shopApiextensionPlugin extends shopPlugin
      */
     public function orderActionСomplete($params)
     {
-        /**
-         * При переводе заказа в статус выполенено, делаем запись о возможности поулчить бонусы за отзыв
-         */
+        // При переводе заказа в статус выполенено, делаем запись о возможности поулчить бонусы за отзыв
         $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
         $apiextensionReviewsAffiliate->addAffiliateWhenOrderComplete($params);
     }
@@ -154,9 +147,7 @@ class shopApiextensionPlugin extends shopPlugin
      */
     public function orderActionRefund($params)
     {
-        /**
-         * При возврате заказа, списываем бонусы у клиента
-         */
+        // При возврате заказа, списываем бонусы у клиента
         $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
         $apiextensionReviewsAffiliate->cancelAffiliateWhenOrderRefund($params);
     }
@@ -166,10 +157,18 @@ class shopApiextensionPlugin extends shopPlugin
      */
     public function controllerAfterShopMarketingPromoRuleEditorAction(&$params)
     {
-        /**
-         * Выводим дополнительные поля в маркетинге промо у баннера
-         */
+        // Выводим дополнительные поля в маркетинге промо у баннера
         $apiextensionMarketingPromoRule = new shopApiextensionPluginMarketingPromoRule();
         $apiextensionMarketingPromoRule->showAdditionalFieldsPromoBannerBackend();
+    }
+
+    /**
+     * HOOK controller_after.shopReviewsChangeStatusController
+     */
+    public function controllerAfterShopReviewsChangeStatusController(&$params)
+    {
+        // Изменение бонусов за отзывы при модерации в бекенде
+        $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
+        $apiextensionReviewsAffiliate->addAffiliateWhenModerationBackend();
     }
 }

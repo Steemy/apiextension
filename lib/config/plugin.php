@@ -22,6 +22,7 @@ return array(
         'order_action.complete' => 'orderActionСomplete',
         'order_action.refund' => 'orderActionRefund',
         'controller_after.shopMarketingPromoRuleEditorAction' => 'controllerAfterShopMarketingPromoRuleEditorAction',
+        'controller_after.shopReviewsChangeStatusController' => 'controllerAfterShopReviewsChangeStatusController',
     ),
     'icons'           => array
         (

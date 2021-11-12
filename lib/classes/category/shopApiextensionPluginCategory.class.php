@@ -55,6 +55,7 @@ class shopApiextensionPluginCategory
      * Получить активный фильтр товаров для категории
      * @param $categoryId - идентификатор категории
      * @return array
+     * @throws ReflectionException
      * @throws waDbException
      * @throws waException
      */
@@ -87,6 +88,7 @@ class shopApiextensionPluginCategory
         $feature_map = array();
 
         if ($category['filter'] || !empty($category['smartfilters'])) {
+            // smartfilters
             if(!empty($category['smartfilters'])) {
                 $filter_ids = explode(',', $category['smartfilters']);
                 $filter_names = explode(',', $category['smartfilters_name']);
@@ -262,6 +264,17 @@ class shopApiextensionPluginCategory
                         }
                         break;
                 }
+            }
+        }
+
+        // myLang
+        // пока тестовом режиме, надо править код в приложении myLang
+        // mylangShopFrontend_categoryHandler#filters - исправить модификатор private to public
+        if (class_exists('mylangShopFrontend_categoryHandler')) {
+            $myLang = new mylangShopFrontend_categoryHandler();
+            $reflection = new ReflectionMethod($myLang, 'filters');
+            if($reflection->isPublic()) {
+                $myLang->filters($filters);
             }
         }
 

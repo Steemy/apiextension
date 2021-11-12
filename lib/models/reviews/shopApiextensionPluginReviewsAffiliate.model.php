@@ -13,6 +13,7 @@ class shopApiextensionPluginReviewsAffiliateModel extends waModel
     const STATE_AFFILIATE_COMPLETED = 'completed';
     const STATE_AFFILIATE_DELETE = 'delete';
     const STATE_AFFILIATE_EXPIRED = 'expired';
+    const STATE_AFFILIATE_MODERATION = 'moderation';
 
     private $settings;
     private $shopOrderItems = 'shop_order_items';
@@ -77,16 +78,31 @@ class shopApiextensionPluginReviewsAffiliateModel extends waModel
 
     /**
      * Получить записи начисления баллов за отзывы
-     * @throws waException
+     * @param $contactId
+     * @param $productId
+     * @param $whereStateOR
+     * @return array
+     * @throws waDbException
      */
-    public function getReviewsAffiliate($contactId, $productId)
+    public function getReviewsAffiliate($contactId, $productId, $whereStateOR, $all=true)
     {
-        return
-            $this
-                ->query("SELECT * FROM `$this->table`
-                        WHERE contact_id = '{$contactId}' AND product_id = '{$productId}' 
-                        AND (state = '".self::STATE_AFFILIATE_COMPLETED."' OR state = '".self::STATE_AFFILIATE_ACTIVE."')")
-                ->fetchAll();
+        $sql = "SELECT * FROM `$this->table` WHERE contact_id = '{$contactId}' AND product_id = '{$productId}'";
+
+        if (is_array($whereStateOR)) {
+            $sql .= " AND (state = '" . array_shift($whereStateOR) . "'";
+            foreach ($whereStateOR as $state) {
+                $sql .= "OR state = '" . $state . "'";
+            }
+            $sql .= ")";
+        }
+
+        $result = $this->query($sql);
+
+        if ($all) {
+            return $result->fetchAll();
+        } else {
+            return $result->fetchAssoc();
+        }
     }
 
     private function getDateSort() {

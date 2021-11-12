@@ -9,10 +9,13 @@
 class shopApiextensionPluginReviewsAffiliate
 {
     private $reviewsAffiliateModel;
+    private $shopAffTrans;
     private $settings;
 
     public function __construct(){
         $this->reviewsAffiliateModel = new shopApiextensionPluginReviewsAffiliateModel();
+        $this->shopAffTrans = new shopAffiliateTransactionModel();
+
         $pluginSetting = shopApiextensionPluginSettings::getInstance();
         $this->settings = $pluginSetting->getSettings();
     }
@@ -47,29 +50,109 @@ class shopApiextensionPluginReviewsAffiliate
             // update old
             $this->reviewsAffiliateModel->updateOld();
 
-            // update bonuses
-            // проверяем есть ли записи в таблице активные для данного товара на получение бонуса за отзыв
-            $revAffiliate =
-                $this->reviewsAffiliateModel->getByField([
+            $revAffiliate = $this->reviewsAffiliateModel->getByField(
+                array(
                     'contact_id' => $params['data']['contact_id'],
                     'product_id' => $params['product']['id'],
-                    'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE
-                ]);
+                    'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                ));
 
-            if(!empty($revAffiliate)) {
-                $shopAffTrans = new shopAffiliateTransactionModel();
-                $shopAffTrans->applyBonus(
-                    $revAffiliate['contact_id'],
-                    $revAffiliate['affiliate'],
-                    $revAffiliate['order_id'],
-                    sprintf($this->settings['bonus_for_review_text'], $params['product']['name']),
-                    shopAffiliateTransactionModel::TYPE_ORDER_BONUS);
+            // проверяем есть ли заявка на начисление бонусов
+            if(!empty($revAffiliate) && $revAffiliate['review_id'] == 0) {
+                // если нет модерации то сразу начисляем бонусы
+                if(!wa()->getSetting('moderation_reviews', 0)) {
+                    // update bonuses
+                    $this->updateBonuses($revAffiliate, $params['product']['name']);
 
-                // после начисления бонусов обновляем статус у записи на - completed
-                $this->reviewsAffiliateModel->updateById(
-                    $revAffiliate['id'],
-                    ['state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED]
-                );
+                    // добавляем заявке id отзыва
+                    $this->reviewsAffiliateModel->updateById(
+                        $revAffiliate['id'],
+                        array('review_id' => $params['id'])
+                    );
+                }
+                // помечаем отзыв статусом на модерацию и добавляем id отзыва
+                else {
+                    // добавляем заявке id отзыва
+                    $this->reviewsAffiliateModel->updateById(
+                        $revAffiliate['id'],
+                        array(
+                            'review_id' => $params['id'],
+                            'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION,
+                        )
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Изменение бонусов за отзывы при модерации в бекенде
+     * @throws waDbException
+     * @throws waException
+     */
+    public function addAffiliateWhenModerationBackend()
+    {
+        if (!$this->settings['bonus_for_review_status'])
+            return;
+
+        $reviewId = waRequest::post('review_id', null, waRequest::TYPE_INT);
+        if (!$reviewId) {
+            throw new waException("Unknown review id");
+        }
+
+        // update old
+        $this->reviewsAffiliateModel->updateOld();
+
+        $status = waRequest::post('status', '', waRequest::TYPE_STRING_TRIM);
+
+        $shopProductReviewsModel = new shopProductReviewsModel();
+        $review = $shopProductReviewsModel->getById($reviewId);
+
+        $shopProductModel = new shopProductModel();
+        $product = $shopProductModel->getById($review['product_id']);
+
+        // если включена модерация отзывов в настройках магазина и статус равен approved
+        // начисляем бонусы клиенту, если есть в записях начисления в статусе moderation
+        if (wa()->getSetting('moderation_reviews', 0) && $status == shopProductReviewsModel::STATUS_PUBLISHED) {
+            // проверяем что есть запись и это именно отзыв и статус публикация
+            if(!empty($review) && $review['parent_id'] == 0
+                && $review['status'] == shopProductReviewsModel::STATUS_PUBLISHED) {
+                $revAffiliate = $this->reviewsAffiliateModel->getByField('review_id', $review['id']);
+                // если есть заявка и статус на модерации, то добавляем бонусы и помечаем статусом completed
+                if (!empty($revAffiliate) && $revAffiliate['state'] ==
+                    shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION) {
+                    $this->updateBonuses($revAffiliate, $product['name']);
+                }
+            }
+        }
+        // если нажали удалить отзыв, то помечаем запись активной, если срок не вышел
+        // или удаленной навсегда и восстановить будет не возможно
+        else if ($status == shopProductReviewsModel::STATUS_DELETED) {
+            $revAffiliate = $this->reviewsAffiliateModel->getByField('review_id', $review['id']);
+
+            if (!empty($revAffiliate)) {
+                // если начислялись бонусы уже за этот отзыва, то делаем возврат
+                if ($revAffiliate['state'] == shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED) {
+                    $this->cancelBonuses($revAffiliate, $product['name']);
+                }
+
+                // если заявка еще активная, то делаем ее статус active
+                if (strtotime($revAffiliate['create_datetime']) >=
+                    strtotime('-'.$this->settings['bonus_for_review_days'].' day')) {
+                    $this->reviewsAffiliateModel->updateById(
+                        $revAffiliate['id'],
+                        array(
+                            'review_id' => 0,
+                            'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                        )
+                    );
+                } else {
+                    // иначе помечаем статусом удалено
+                    $this->reviewsAffiliateModel->updateById(
+                        $revAffiliate['id'],
+                        array('state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_DELETE));
+                }
+
             }
         }
     }
@@ -93,28 +176,31 @@ class shopApiextensionPluginReviewsAffiliate
             // проверяем были ли начислены баллы и делаем отмену баллов
             if(!empty($orderItems)) {
                 foreach ($orderItems as $item) {
-                    $revAffiliate =
-                        $this->reviewsAffiliateModel->getByField([
-                            'contact_id' => $order['contact_id'],
-                            'product_id' => $item['product_id'],
-                            'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
-                        ]);
+                    $revAffiliates =
+                        $this->reviewsAffiliateModel->getReviewsAffiliate(
+                            $order['contact_id'],
+                            $item['product_id'],
+                            array(
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION
+                            )
+                        );
 
                     // меняем статус на delete и делаем отмену баллов
-                    if(!empty($revAffiliate)) {
-                        $shopAffTrans = new shopAffiliateTransactionModel();
-                        $shopAffTrans->applyBonus(
-                            $revAffiliate['contact_id'],
-                            -$revAffiliate['affiliate'],
-                            $revAffiliate['order_id'],
-                            sprintf($this->settings['bonus_text_cancel'], $item['name']),
-                            shopAffiliateTransactionModel::TYPE_ORDER_CANCEL);
+                    if(!empty($revAffiliates)) {
+                        foreach ($revAffiliates as $ra) {
+                            // если есть выполненная запись о начисление бонусов, то отменяем их
+                            if($ra['state'] == shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED) {
+                                $this->cancelBonuses($ra, $item['name']);
+                            }
 
-                        // после отмены бонусов обновляем статус у записи на - delete
-                        $this->reviewsAffiliateModel->updateById(
-                            $revAffiliate['id'],
-                            ['state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_DELETE]
-                        );
+                            // обновляем статус у записи на - delete
+                            $this->reviewsAffiliateModel->updateById(
+                                $ra['id'],
+                                array('state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_DELETE)
+                            );
+                        }
                     }
                 }
             }
@@ -123,7 +209,7 @@ class shopApiextensionPluginReviewsAffiliate
     }
 
     /**
-     * При переводе заказа в статус выполенено, делаем запись о возможности поулчить бонусы за отзыв
+     * При переводе заказа в статус выполенено, делаем запись о возможности получить бонусы за отзыв
      * @throws waException
      */
     public function addAffiliateWhenOrderComplete($params)
@@ -139,14 +225,24 @@ class shopApiextensionPluginReviewsAffiliate
             $orderItems = $shopOrderItemsModel->getItems($order['id']);
 
             // получаем товары заказа и делаем записи в таблицу для начиселния бонусов, если еще не заносилась
-            // если для товара создавалась запись и она в статусе активна или выполенена, то новой записи создано не будет
+            // если для товара создавалась запись и она в статусе активна, выполенена или на модерации,
+            // то новой записи создано не будет
             if(!empty($orderItems)) {
                 foreach($orderItems as $item) {
-                    $revAffiliate =
-                        $this->reviewsAffiliateModel->getReviewsAffiliate($order['contact_id'],  $item['product_id']);
+                    $revAffiliates =
+                        $this->reviewsAffiliateModel->getReviewsAffiliate(
+                            $order['contact_id'],
+                            $item['product_id'],
+                            array(
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION
+                            )
+                        );
 
+                    // если раньше записи не создавались уже для заказа
                     // добавляем запись для начисления бонусов за отзыв, тут же рассчитывает бонус за товар
-                    if(empty($revAffiliate)) {
+                    if(empty($revAffiliates)) {
                         $this->reviewsAffiliateModel->insert(array(
                             'contact_id' => $order['contact_id'],
                             'order_id'   => $order['id'],
@@ -160,6 +256,51 @@ class shopApiextensionPluginReviewsAffiliate
         }
     }
 
+    /**
+     * Обновление бонусов
+     * @param $revAffiliate
+     * @param $productName
+     */
+    private function updateBonuses($revAffiliate, $productName) {
+        if(!empty($revAffiliate)) {
+            $this->shopAffTrans->applyBonus(
+                $revAffiliate['contact_id'],
+                $revAffiliate['affiliate'],
+                $revAffiliate['order_id'],
+                sprintf($this->settings['bonus_for_review_text'], $productName),
+                shopAffiliateTransactionModel::TYPE_ORDER_BONUS);
+
+            // после начисления бонусов обновляем статус у записи на - completed
+            $this->reviewsAffiliateModel->updateById(
+                $revAffiliate['id'],
+                ['state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED]
+            );
+        }
+    }
+
+    /**
+     * Отмена бонусов
+     * @param $revAffiliate
+     * @param $productName
+     */
+    private function cancelBonuses($revAffiliate, $productName) {
+        if(!empty($revAffiliate)) {
+            $this->shopAffTrans->applyBonus(
+                $revAffiliate['contact_id'],
+                -$revAffiliate['affiliate'],
+                $revAffiliate['order_id'],
+                sprintf($this->settings['bonus_text_cancel'], $productName),
+                shopAffiliateTransactionModel::TYPE_ORDER_CANCEL);
+        }
+    }
+
+    /**
+     * Расчитать бонусы по правилам
+     * @param $item
+     * @return float|int
+     * @throws waDbException
+     * @throws waException
+     */
     private function getAffiliate($item)
     {
         $bonus = $this->settings['bonus_for_review_all'];
