@@ -35,6 +35,7 @@ class shopApiextensionPluginConst
             'bonus_text'                 => 'Бонусы за отзыв о товаре - %s',
             'bonus_text_cancel'          => 'Отмена бонусов за отзыв о товаре - %s',
             'bonus_by_category'          => array(),
+            'bonus_max'                  => 1000,
             'plugin_info'                => wa()->getConfig()->getAppConfig('shop')->getPluginInfo($this->getNamePlugin()),
         );
     }

@@ -327,6 +327,11 @@ class shopApiextensionPluginReviewsAffiliate
             $bonus = round($bonus, 0, PHP_ROUND_HALF_DOWN);
         }
 
+        // провекра на максимальный бонус
+        if($bonus > $this->settings['bonus_max']) {
+            $bonus = $this->settings['bonus_max'];
+        }
+
         return $bonus;
     }
 }
