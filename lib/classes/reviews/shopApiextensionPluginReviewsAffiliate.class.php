@@ -348,7 +348,7 @@ class shopApiextensionPluginReviewsAffiliate
                 $revAffiliate['contact_id'],
                 $bonus,
                 $revAffiliate['order_id'],
-                sprintf($this->settings['bonus_for_review_text'], $product['name']),
+                sprintf($this->settings['bonus_text'], $product['name']),
                 shopAffiliateTransactionModel::TYPE_ORDER_BONUS);
 
             // после начисления бонусов обновляем статус у записи на - completed
