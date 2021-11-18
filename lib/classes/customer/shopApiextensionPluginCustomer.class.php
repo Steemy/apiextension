@@ -23,7 +23,7 @@ class shopApiextensionPluginCustomer
      */
     public function affiliateBonus($contactId)
     {
-        if(!wa()->getAuth()->isAuth()) return '';
+        if(!wa()->getUser()->isAuth()) return '';
 
         if(!$contactId) {
             $contactId = wa()->getUser()->getId();

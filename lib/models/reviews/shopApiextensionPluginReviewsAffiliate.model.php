@@ -51,13 +51,15 @@ class shopApiextensionPluginReviewsAffiliateModel extends waModel
             $collection = new shopProductsCollection(array_keys($productsAffiliate));
             $productsCollection = $collection->getProducts();
             if($productsCollection) {
+                $reviewAffiliate = new shopApiextensionPluginReviewsAffiliate();
                 foreach($productsAffiliate as $id => $p) {
                     if(!empty($productsCollection[$id])) {
-                        $productsCollection[$id]['apiextension_affiliate'] = $p['affiliate'];
                         $productsCollection[$id]['apiextension_create_datetime'] = $p['create_datetime'];
                         $productsCollection[$id]['apiextension_expires_datetime'] = strtotime("+" .$this->settings['bonus_for_review_days']. " day", strtotime($p['create_datetime']));
                         $productsCollection[$id]['apiextension_bonus_days'] = $this->settings['bonus_for_review_days'];
-                        $products[] = $productsCollection[$id];
+                        $productsCollection[$id]['apiextension_affiliate'] = $reviewAffiliate->getAffiliate($productsCollection[$id]);
+                        $productsCollection[$id]['apiextension_affiliate_photo'] = $reviewAffiliate->getAffiliatePhoto($productsCollection[$id]);
+                        $products[$id] = $productsCollection[$id];
                     }
                 }
             }

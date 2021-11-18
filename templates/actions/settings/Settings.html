@@ -62,9 +62,13 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">Бонус за отзыв общий</div>
+                    <div class="name">
+                        Бонус общий<br />
+                        (отзыв/отзыв с фото)
+                    </div>
                     <div class="value">
-                        <input type="text" name="shop_plugins[bonus_for_review_all]" value="{$settings.bonus_for_review_all}" />
+                        <input type="number" step="any" name="shop_plugins[bonus_for_review_all]" value="{$settings.bonus_for_review_all}" placeholder="за отзыв" />
+                        <input type="number" step="any" name="shop_plugins[bonus_for_review_all_photo]" value="{$settings.bonus_for_review_all_photo}" placeholder="с фото" />
                         <select name="shop_plugins[bonus_for_review_all_type]" style="max-width:150px;">
                             <option value="number" {if $settings.bonus_for_review_all_type == 'number'} selected="selected"{/if}>
                                 число
@@ -92,7 +96,7 @@
                 <div class="field">
                     <div class="name">Сколько дней на отзыв</div>
                     <div class="value">
-                        <input type="text" name="shop_plugins[bonus_for_review_days]" value="{$settings.bonus_for_review_days}" />
+                        <input type="number" step="any" name="shop_plugins[bonus_for_review_days]" value="{$settings.bonus_for_review_days}" />
                         <p class="hint">сколько дается клиенту времени на написание отзыва</p>
                     </div>
                 </div>
@@ -110,10 +114,14 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">Максимальный бонус</div>
+                    <div class="name">
+                        Максимальный бонус
+                        (отзыв/отзыв с фото)
+                    </div>
                     <div class="value">
-                        <input type="text" name="shop_plugins[bonus_max]" value="{$settings.bonus_max}" />
-                        <p class="hint">сколько максимально может начислиться бонусов за отзыв, подойдет для % от цены товара</p>
+                        <input type="number" step="any" name="shop_plugins[bonus_max]" value="{$settings.bonus_max}" placeholder="за отзыв" />
+                        <input type="number" step="any" name="shop_plugins[bonus_max_photo]" value="{$settings.bonus_max_photo}" placeholder="с фото" />
+                        <p class="hint">сколько максимально может начислиться бонусов за отзыв/за отзыв с фото, подойдет для % от цены товара</p>
                     </div>
                 </div>
 
@@ -127,8 +135,8 @@
                             <tr>
                                 <td width="30%"{if $c.depth==0} style="font-weight:bold;"{/if}>{"- "|str_repeat:$c.depth} {$c.name|escape}</td>
                                 <td>
-                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$c.id}][bonus]" value="{if !empty($settings.bonus_by_category[{$c.id}].bonus)}{$settings.bonus_by_category[{$c.id}].bonus}{/if}"
-                                           style="max-width:70px;">
+                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$c.id}][bonus]" value="{if !empty($settings.bonus_by_category[{$c.id}].bonus)}{$settings.bonus_by_category[{$c.id}].bonus}{/if}" placeholder="за отзыв">
+                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$c.id}][bonus_photo]" value="{if !empty($settings.bonus_by_category[{$c.id}].bonus_photo)}{$settings.bonus_by_category[{$c.id}].bonus_photo}{/if}" placeholder="с фото">
 
                                     <select name="shop_plugins[bonus_by_category][{$c.id}][type]" style="max-width:150px;">
                                         <option value="number"
