@@ -68,6 +68,7 @@ class shopApiextensionPluginSettings
             }
         }
 
+        $this->getSettingsCheck($this->settings);
         return $this->settings;
     }
 

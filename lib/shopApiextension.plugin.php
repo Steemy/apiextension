@@ -129,7 +129,7 @@ class shopApiextensionPlugin extends shopPlugin
     {
         // Выводим в админке поля у отзывов
         $apiextensionReviews = new shopApiextensionPluginReviews();
-        $apiextensionReviews->showAdditionalFieldsReviewBackend($params);
+        return $apiextensionReviews->showAdditionalFieldsReviewBackend($params);
     }
 
     /**
@@ -170,5 +170,9 @@ class shopApiextensionPlugin extends shopPlugin
         // Изменение бонусов за отзывы при модерации в бекенде
         $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
         $apiextensionReviewsAffiliate->addAffiliateWhenModerationBackend();
+
+        // Удаление отзыва
+        $apiextensionReviews = new shopApiextensionPluginReviews();
+        $apiextensionReviews->removeReview();
     }
 }

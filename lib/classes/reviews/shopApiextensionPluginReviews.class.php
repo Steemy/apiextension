@@ -40,7 +40,7 @@ class shopApiextensionPluginReviews
      */
     public function addAdditionalFields($params)
     {
-        if ($this->settings['review_fields'] && $params['data']['parent_id'] == 0) {
+        if ($this->settings['additional_fields_review'] && $params['data']['parent_id'] == 0) {
             $params['data']['apiextension_experience'] =
                 htmlspecialchars(waRequest::post('apiextension_experience', null, waRequest::TYPE_STRING_TRIM));
 
@@ -58,11 +58,13 @@ class shopApiextensionPluginReviews
     /**
      * Показываем дополнительные поля для отзывов в админке
      * @param $params
+     * @return string
+     * @throws waException
      */
     public function showAdditionalFieldsReviewBackend($params)
     {
-        if(!$this->settings['review_fields'] || !$params['reviews']) {
-            return;
+        if(!$this->settings['additional_fields_review'] || !$params['reviews']) {
+            return '';
         }
 
         $additionalFields = array();
@@ -74,48 +76,28 @@ class shopApiextensionPluginReviews
             $additionalFields[$r['id']]['apiextension_votes'] = json_decode($r['apiextension_votes'], true);
         }
 
+        $script = '';
         if ($additionalFields) {
-            $additionalFieldsJson = json_encode($additionalFields);
+            $options = json_encode(array(
+                "additionalFields" => $additionalFields,
+                "delete" => $this->settings['delete_reviews'],
+            ));
+
+            $version = $this->settings['plugin_info']['version'];
+            $urlPluginCSS = wa()->getRootUrl() . "wa-apps/shop/plugins/apiextension/css/backend.reviews.css?v=" . $version;
+            $urlPluginJS = wa()->getRootUrl() . "wa-apps/shop/plugins/apiextension/js/backend.reviews.js?v=" . $version;
+
             $script = "
+<link href=\"{$urlPluginCSS}\" rel=\"stylesheet\"></link>
+<script src=\"{$urlPluginJS}\"></script>
 <script>
     $(function() {
-        const additionalFields = " . $additionalFieldsJson . ";
-        for (let id in additionalFields) {
-            if(additionalFields[id]['apiextension_votes']) {
-                $('.s-review[data-id=' + id + ']')
-                    .find('.s-review-text')
-                    .after('<p><span class=\"hint\">Голсование</span>: за - ' + additionalFields[id]['apiextension_votes']['vote_like'] + ', против - ' + additionalFields[id]['apiextension_votes']['vote_dislike'] + '</p>');
-            }
-            
-            if(additionalFields[id]['apiextension_recommend'] && +additionalFields[id]['apiextension_recommend'] > 0) {
-                const limitations = additionalFields[id]['apiextension_recommend'] == 1 ? '<span style=\"color:red\">Не рекомендую</span>' : '<span style=\"color:green\">Рекомендую</span>' ;
-                $('.s-review[data-id=' + id + ']')
-                    .find('.s-review-text')
-                    .after('<p><span class=\"hint\">Рекомендуете ли вы этот товар</span>: ' + limitations + '</p>');
-            }
-            
-            if(additionalFields[id]['apiextension_limitations']) {
-                $('.s-review[data-id=' + id + ']')
-                    .find('.s-review-text')
-                    .after('<p><span class=\"hint\">Недостатки</span>: ' + additionalFields[id]['apiextension_limitations'] + '</p>');
-            }
-            
-            if(additionalFields[id]['apiextension_dignity']) {
-                $('.s-review[data-id=' + id + ']')
-                    .find('.s-review-text')
-                    .after('<p><span class=\"hint\">Достоинства</span>: ' + additionalFields[id]['apiextension_dignity'] + '</p>');
-            }
-            
-            if(additionalFields[id]['apiextension_experience']) {
-                $('.s-review[data-id=' + id + ']')
-                    .find('.s-review-text')
-                    .after('<p><span class=\"hint\">Опыт использования</span>: ' + additionalFields[id]['apiextension_experience'] + '</p>');
-            }
-        }
+        $.backendReviews.init({$options});
     });
 </script>";
-            echo $script;
         }
+
+        return $script;
     }
 
     /**
@@ -145,5 +127,37 @@ class shopApiextensionPluginReviews
                 ->select('*')
                 ->where("contact_id={$contactId} and review_id IN({$reviewIds})")
                 ->fetchAll('review_id');
+    }
+
+    /**
+     * Удалить отзыв и фото для отзыва
+     * @throws Exception
+     * @throws waDbException
+     * @throws waException
+     */
+    public function removeReview() {
+        if (!$this->settings['delete_reviews'])
+            return;
+
+        $reviewId = waRequest::post('review_id', null, waRequest::TYPE_INT);
+        if (!$reviewId) {
+            throw new waException("Unknown review id");
+        }
+
+        $status = waRequest::post('status', '', waRequest::TYPE_STRING_TRIM);
+
+        if ($status == shopProductReviewsModel::STATUS_DELETED) {
+            // удаялем отзыв и делаем ремонт
+            $reviewsModel = new shopProductReviewsModel();
+            $reviewsModel->deleteById($reviewId);
+            $reviewsModel->repair();
+
+            // удаляем картинки для отзыва
+            $reviewImagesModel = new shopProductReviewsImagesModel();
+            $reviewsImages = $reviewImagesModel->getByField('review_id', $reviewId, true);
+            foreach ($reviewsImages as $images) {
+                $reviewImagesModel->remove($images['id']);
+            }
+        }
     }
 }

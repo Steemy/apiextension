@@ -26,7 +26,9 @@ class shopApiextensionPluginConst
     public function getSettingsDefault()
     {
         return array(
-            'review_fields'              => 0,
+            'additional_fields_review'   => 0,
+            'edit_fields_in_reviews'     => 0,
+            'delete_reviews'             => 0,
             'bonus_for_review_status'    => 0,
             'bonus_for_review_all'       => 0,
             'bonus_for_review_all_photo' => 0,

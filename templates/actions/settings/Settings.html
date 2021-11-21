@@ -36,10 +36,36 @@
                         <div class="ibutton-checkbox">
                             <ul class="menu-h">
                                 <li><span id="switcher-off-label">Нет</span></li>
-                                <li><input class="switcher" type="checkbox" name="shop_plugins[review_fields]"{if $settings.review_fields} checked="checked"{/if} value="1" /></li>
+                                <li><input class="switcher" type="checkbox" name="shop_plugins[additional_fields_review]"{if $settings.additional_fields_review} checked="checked"{/if} value="1" /></li>
                                 <li><span id="switcher-on-label">Да</span></li>
                             </ul>
                             <p></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">Редактировать поля в отзывах:</div>
+                    <div class="value">
+                        <div class="ibutton-checkbox">
+                            <ul class="menu-h">
+                                <li><span id="switcher-off-label">Нет</span></li>
+                                <li><input class="switcher" type="checkbox" name="shop_plugins[edit_fields_in_reviews]"{if $settings.edit_fields_in_reviews} checked="checked"{/if} value="1" /></li>
+                                <li><span id="switcher-on-label">Да</span></li>
+                            </ul>
+                            <p class="hint">возможность редактировать текст написанного отзыва</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">Удалять отзывы:</div>
+                    <div class="value">
+                        <div class="ibutton-checkbox">
+                            <ul class="menu-h">
+                                <li><span id="switcher-off-label">Нет</span></li>
+                                <li><input class="switcher" type="checkbox" name="shop_plugins[delete_reviews]"{if $settings.delete_reviews} checked="checked"{/if} value="1" /></li>
+                                <li><span id="switcher-on-label">Да</span></li>
+                            </ul>
+                            <p class="hint">возможность полностью удалить отзывы из админки</p>
                         </div>
                     </div>
                 </div>
