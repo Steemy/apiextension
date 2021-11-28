@@ -102,6 +102,19 @@ class shopApiextensionPlugin extends shopPlugin
     }
 
     /**
+     * Получить теги товаров текущей категории
+     * @param $categoryId - идентификатор категории
+     * @return array|mixed
+     * @throws waDbException
+     * @throws waException
+     */
+    static function getTagsByCategory($categoryId)
+    {
+        $apiextensionCategory = new shopApiextensionPluginCategory();
+        return $apiextensionCategory->getTagsByCategory($categoryId);
+    }
+
+    /**
      * HOOK frontend_review_add.before
      * @param $params
      */

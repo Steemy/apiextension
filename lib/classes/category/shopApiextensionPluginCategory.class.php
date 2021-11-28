@@ -284,6 +284,84 @@ class shopApiextensionPluginCategory
     }
 
     /**
+     * Получить теги товаров текущей категории
+     * @param $categoryId - идентификатор категории
+     * @return array|mixed
+     * @throws waDbException
+     * @throws waException
+     */
+    public function getTagsByCategory($categoryId)
+    {
+        $tags = array();
+
+        if ($cache = wa('shop')->getCache()) {
+            $tags = $cache->get('apiextension_tags_by_category_' . $categoryId);
+            if ($tags !== null) {
+                return $tags;
+            }
+        }
+
+        $collection = new shopProductsCollection('category/'.$categoryId);
+        $products = $collection->getProducts('id');
+        $idsProducts = array_keys($products);
+
+        if ($idsProducts) {
+            $ids = implode(',' ,$idsProducts);
+            $tagModel = new shopTagModel();
+            $tags = $tagModel
+                ->query("SELECT t.* FROM `shop_tag` AS t
+                          WHERE t.id IN(
+                            SELECT pt.tag_id FROM `shop_product_tags` AS pt WHERE pt.product_id IN({$ids})
+                          ) AND t.count > 0 ORDER BY count DESC")
+                ->fetchAll();
+
+            if (!empty($tags)) {
+                $first = current($tags);
+                $max_count = $min_count = $first['count'];
+                foreach ($tags as $tag) {
+                    if ($tag['count'] > $max_count) {
+                        $max_count = $tag['count'];
+                    }
+                    if ($tag['count'] < $min_count) {
+                        $min_count = $tag['count'];
+                    }
+                }
+                $diff = $max_count - $min_count;
+                if ($diff > 0) {
+                    $step_size = ($tagModel::CLOUD_MAX_SIZE - $tagModel::CLOUD_MIN_SIZE) / $diff;
+                    $step_opacity = ($tagModel::CLOUD_MAX_OPACITY - $tagModel::CLOUD_MIN_OPACITY) / $diff;
+                }
+                foreach ($tags as &$tag) {
+                    if ($diff > 0) {
+                        $tag['size'] = ceil($tagModel::CLOUD_MIN_SIZE + ($tag['count'] - $min_count) * $step_size);
+                        $tag['opacity'] = number_format(($tagModel::CLOUD_MIN_OPACITY + ($tag['count'] - $min_count) * $step_opacity) / 100, 2, '.', '');
+                    } else {
+                        $tag['size'] = ceil(($tagModel::CLOUD_MAX_SIZE + $tagModel::CLOUD_MIN_SIZE) / 2);
+                        $tag['opacity'] = number_format($tagModel::CLOUD_MAX_OPACITY, 2, '.', '');
+                    }
+                    if (strpos($tag['name'], '/') !== false) {
+                        $tag['uri_name'] = explode('/', $tag['name']);
+                        $tag['uri_name'] = array_map('urlencode', $tag['uri_name']);
+                        $tag['uri_name'] = implode('/', $tag['uri_name']);
+                    } else {
+                        $tag['uri_name'] = urlencode($tag['name']);
+                    }
+                }
+                unset($tag);
+
+                // Sort tags by name
+                uasort($tags, wa_lambda('$a, $b', 'return strcmp($a["name"], $b["name"]);'));
+            }
+
+            if (!empty($cache)) {
+                $cache->set('apiextension_tags_by_category_' . $categoryId, $tags, 7200);
+            }
+        }
+
+        return $tags;
+    }
+
+    /**
      * @param shopDimensionValue|double $v
      * @return double
      */
