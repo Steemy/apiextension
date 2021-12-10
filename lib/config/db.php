@@ -21,6 +21,7 @@ return array(
         'review_id' => array('int', 11, 'null' => 0, 'default' => 0),
         'order_id' => array('int', 11, 'null' => 0),
         'product_id' => array('int', 11, 'null' => 0),
+        'sku_id' => array('int', 11, 'null' => 1),
         'affiliate' => array('int', 11, 'null' => 0, 'default' => 0),
         'create_datetime' => array('datetime', 'null' => 0, 'default' => 'CURRENT_TIMESTAMP'),
         'state' => array('varchar', 32, 'null' => 0),

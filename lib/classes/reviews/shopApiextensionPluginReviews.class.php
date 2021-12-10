@@ -20,18 +20,38 @@ class shopApiextensionPluginReviews
     /**
      * Получить количество отзывов для товаров
      * @param $productIds - список ид товаров
-     * @return array
+     * @return array|mixed
      * @throws waDbException
+     * @throws waException
      */
     public function reviewsCount($productIds)
     {
         if(!$productIds) return array();
 
+        if(is_array($productIds)) {
+            $productIdsString = implode(',', $productIds);
+        } else {
+            $productIdsString = $productIds;
+        }
+
+        if ($cache = wa('shop')->getCache()) {
+            $reviewsCount = $cache->get('apiextension_product_reviews_count_' . $productIdsString);
+            if ($reviewsCount !== null) {
+                return $reviewsCount;
+            }
+        }
+
         if(!is_array($productIds)) {
             $productIds = explode(',', $productIds);
         }
 
-        return $this->apiextensionReviewsModel->reviewsCount($productIds);
+        $reviewsCount = $this->apiextensionReviewsModel->reviewsCount($productIds);
+
+        if (!empty($cache) && $productIdsString) {
+            $cache->set('apiextension_product_reviews_count_' . $productIdsString, $reviewsCount, 7200);
+        }
+
+        return $reviewsCount;
     }
 
     /**

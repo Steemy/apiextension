@@ -24,8 +24,9 @@ class shopApiextensionPlugin extends shopPlugin
     /**
      * Получить количество отзывов для товаров
      * @param $productIds - список ид товаров
-     * @return array
+     * @return array|mixed
      * @throws waDbException
+     * @throws waException
      */
     static public function reviewsCount($productIds)
     {

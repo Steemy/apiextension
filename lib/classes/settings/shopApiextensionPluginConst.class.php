@@ -33,7 +33,7 @@ class shopApiextensionPluginConst
             'bonus_for_review_all'       => 0,
             'bonus_for_review_all_photo' => 0,
             'bonus_for_review_all_type'  => 'number',
-            'bonus_for_review_all_round' => 'percent',
+            'bonus_for_review_all_round' => 'round_no',
             'bonus_for_review_days'      => 30,
             'bonus_text'                 => 'Бонусы за отзыв о товаре - %s',
             'bonus_text_cancel'          => 'Отмена бонусов за отзыв о товаре - %s',

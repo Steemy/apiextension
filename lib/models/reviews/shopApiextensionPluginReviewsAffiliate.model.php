@@ -38,7 +38,7 @@ class shopApiextensionPluginReviewsAffiliateModel extends waModel
         // update old
         $this->updateOld();
 
-        $sql = "SELECT i.product_id, a.affiliate, a.create_datetime FROM `{$this->shopOrderItems}` as i
+        $sql = "SELECT i.product_id, a.sku_id, a.affiliate, a.create_datetime FROM `{$this->shopOrderItems}` as i
                 LEFT JOIN `{$this->table}` AS a ON i.order_id = a.order_id and i.product_id = a.product_id
                 WHERE a.state = '".self::STATE_AFFILIATE_ACTIVE."' AND a.create_datetime >= '{$this->getDateSort()}' AND a.contact_id = ?
                 ORDER BY a.create_datetime ASC";
@@ -54,12 +54,17 @@ class shopApiextensionPluginReviewsAffiliateModel extends waModel
                 $reviewAffiliate = new shopApiextensionPluginReviewsAffiliate();
                 foreach($productsAffiliate as $id => $p) {
                     if(!empty($productsCollection[$id])) {
-                        $productsCollection[$id]['apiextension_create_datetime'] = $p['create_datetime'];
-                        $productsCollection[$id]['apiextension_expires_datetime'] = strtotime("+" .$this->settings['bonus_for_review_days']. " day", strtotime($p['create_datetime']));
-                        $productsCollection[$id]['apiextension_bonus_days'] = $this->settings['bonus_for_review_days'];
-                        $productsCollection[$id]['apiextension_affiliate'] = $reviewAffiliate->getAffiliate($productsCollection[$id]);
-                        $productsCollection[$id]['apiextension_affiliate_photo'] = $reviewAffiliate->getAffiliatePhoto($productsCollection[$id]);
-                        $products[$id] = $productsCollection[$id];
+                        $affiliate = $reviewAffiliate->getAffiliate($productsCollection[$id], $p['sku_id']);
+                        $affiliatePhoto = $reviewAffiliate->getAffiliatePhoto($productsCollection[$id], $p['sku_id']);
+
+                        if($affiliate > 0 || $affiliatePhoto > 0) {
+                            $productsCollection[$id]['apiextension_create_datetime'] = $p['create_datetime'];
+                            $productsCollection[$id]['apiextension_expires_datetime'] = strtotime("+" . $this->settings['bonus_for_review_days'] . " day", strtotime($p['create_datetime']));
+                            $productsCollection[$id]['apiextension_bonus_days'] = $this->settings['bonus_for_review_days'];
+                            $productsCollection[$id]['apiextension_affiliate'] = $affiliate;
+                            $productsCollection[$id]['apiextension_affiliate_photo'] = $affiliatePhoto;
+                            $products[$id] = $productsCollection[$id];
+                        }
                     }
                 }
             }

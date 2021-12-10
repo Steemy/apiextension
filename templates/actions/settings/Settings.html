@@ -104,6 +104,9 @@
                             <option value="percent" {if $settings.bonus_for_review_all_type == 'percent'} selected="selected"{/if}>
                                 % от цена товара
                             </option>
+                            <option value="percent_purchase" {if $settings.bonus_for_review_all_type == 'percent_purchase'} selected="selected"{/if}>
+                                % от (цена - цена закупки)
+                            </option>
                         </select>
 
                         <select name="shop_plugins[bonus_for_review_all_round]" style="max-width:150px;">
@@ -175,6 +178,10 @@
                                                 {if !empty($settings.bonus_by_category[{$c.id}].type)
                                         && $settings.bonus_by_category[{$c.id}].type== 'percent'} selected="selected"{/if}>
                                             % от цена товара</option>
+                                        <option value="percent_purchase"
+                                                {if !empty($settings.bonus_by_category[{$c.id}].type)
+                                        && $settings.bonus_by_category[{$c.id}].type== 'percent_purchase'} selected="selected"{/if}>
+                                            % от (цена - цена закупки)</option>
                                     </select>
 
                                     <select name="shop_plugins[bonus_by_category][{$c.id}][round]" style="max-width:150px;">
