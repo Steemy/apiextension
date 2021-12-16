@@ -20,13 +20,11 @@ class shopApiextensionPluginProduct
         if(!$productIds) return array();
 
         if(is_array($productIds)) {
-            $productIdsString = implode(',', $productIds);
-        } else {
-            $productIdsString = $productIds;
+            $productIds = implode(',', $productIds);
         }
 
         if ($cache = wa('shop')->getCache()) {
-            $productImages = $cache->get('apiextension_product_images_' . $productIdsString);
+            $productImages = $cache->get('apiextension_product_images_' . $productIds);
             if ($productImages !== null) {
                 return $productImages;
             }
@@ -35,17 +33,19 @@ class shopApiextensionPluginProduct
         $productImages = array();
         $productImagesModel = new shopProductImagesModel();
 
-        if(!is_array($productIds)) {
-            $productIds = explode(',', $productIds);
-        }
+        $productImagesAll =
+            $productImagesModel
+                ->select('*')
+                ->where('product_id IN(' . $productIds . ')')
+                ->order('sort ASC')
+                ->fetchAll();
 
-        $productImagesAll = $productImagesModel->getByField('product_id', $productIds, true);
         foreach($productImagesAll as $image) {
             $productImages[$image['product_id']][$image['id']] = $image;
         }
 
-        if (!empty($cache) && $productIdsString) {
-            $cache->set('apiextension_product_images_' . $productIdsString, $productImages, 7200);
+        if (!empty($cache) && $productIds) {
+            $cache->set('apiextension_product_images_' . $productIds, $productImages, 7200);
         }
 
         return $productImages;

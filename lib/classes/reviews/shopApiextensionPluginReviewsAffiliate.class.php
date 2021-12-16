@@ -248,7 +248,7 @@ class shopApiextensionPluginReviewsAffiliate
                             'contact_id' => $order['contact_id'],
                             'order_id'   => $order['id'],
                             'product_id' => $item['product_id'],
-                            'product_skus' => $item['sku_id'],
+                            'sku_id' => $item['sku_id'],
                             'state'      => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
                         ));
                     }
@@ -282,12 +282,16 @@ class shopApiextensionPluginReviewsAffiliate
         if($type == 'percent') {
             $bonus = $product['price'] * $bonus / 100;
 
-        } else if($type == 'percent_purchase' && $skuId) {
-            $productSkus = new shopProductSkusModel();
-            $skuId = $productSkus->getById($skuId);
+        } else if($type == 'percent_purchase') {
+            if($skuId) {
+                $productSkus = new shopProductSkusModel();
+                $skuId = $productSkus->getById($skuId);
 
-            if(!empty($skuId['purchase_price']) && $skuId['purchase_price'] > 0 && $skuId['purchase_price'] < $product['price']) {
-                $bonus = ($product['price'] - $skuId['purchase_price']) * $bonus / 100;
+                if (!empty($skuId['purchase_price']) && $skuId['purchase_price'] > 0 && $skuId['purchase_price'] < $product['price']) {
+                    $bonus = ($product['price'] - $skuId['purchase_price']) * $bonus / 100;
+                } else {
+                    return 0;
+                }
             } else {
                 return 0;
             }
@@ -332,12 +336,16 @@ class shopApiextensionPluginReviewsAffiliate
         if($type == 'percent') {
             $bonus = $product['price'] * $bonus / 100;
 
-        } else if($type == 'percent_purchase' && $skuId) {
-            $productSkus = new shopProductSkusModel();
-            $skuId = $productSkus->getById($skuId);
+        } else if($type == 'percent_purchase') {
+            if($skuId) {
+                $productSkus = new shopProductSkusModel();
+                $skuId = $productSkus->getById($skuId);
 
-            if(!empty($skuId['purchase_price']) && $skuId['purchase_price'] > 0 && $skuId['purchase_price'] < $product['price']) {
-                $bonus = ($product['price'] - $skuId['purchase_price']) * $bonus / 100;
+                if (!empty($skuId['purchase_price']) && $skuId['purchase_price'] > 0 && $skuId['purchase_price'] < $product['price']) {
+                    $bonus = ($product['price'] - $skuId['purchase_price']) * $bonus / 100;
+                } else {
+                    return 0;
+                }
             } else {
                 return 0;
             }
