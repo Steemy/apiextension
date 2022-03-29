@@ -302,7 +302,7 @@ class shopApiextensionPluginCategory
         }
 
         $collection = new shopProductsCollection('category/'.$categoryId);
-        $products = $collection->getProducts('id');
+        $products = $collection->getProducts('id', 0 , $collection->count());
         $idsProducts = array_keys($products);
 
         if ($idsProducts) {
