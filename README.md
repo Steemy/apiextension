@@ -47,6 +47,10 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 </p>
 
 <p>
+<b>shopApiextensionPlugin::getBonusReviewForProduct($product)</b> - поулчить массив бонусов за конкретный товар для динамического расчета
+</p>
+
+<p>
 <b>shopApiextensionPlugin::getTagsByCategory($categoryId)</b> - теги товаров текущей категории, так же можно настроить кеширование тегов, <a href="https://developers.webasyst.ru/docs/features/cache/" target="_blank">инструкция от webasyst</a>
 </p>
 

@@ -39,6 +39,22 @@ class shopApiextensionPluginReviewsAffiliate
     }
 
     /**
+     * Получить количество отзывов для товаров
+     * @param $productId - информаци о товаре, массив
+     */
+    public function getBonusReviewForProduct($product)
+    {
+        if(!$this->settings['bonus_for_review_status'] || !$product) {
+            return array();
+        }
+
+        return array(
+            "apiextension_affiliate" => $this->getAffiliate($product, $product['sku_id']),
+            "apiextension_affiliate_photo" => $this->getAffiliatePhoto($product, $product['sku_id'])
+        );
+    }
+
+    /**
      * Начислить бонусы в момент написания отзыв
      * @param $params
      * @throws waDbException
@@ -54,7 +70,7 @@ class shopApiextensionPluginReviewsAffiliate
                 array(
                     'contact_id' => $params['data']['contact_id'],
                     'product_id' => $params['product']['id'],
-                    'state' => $this->reviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                    'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
                 ));
 
             // проверяем есть ли заявка на начисление бонусов
@@ -77,7 +93,7 @@ class shopApiextensionPluginReviewsAffiliate
                         $revAffiliate['id'],
                         array(
                             'review_id' => $params['id'],
-                            'state' => $this->reviewsAffiliateModel::STATE_AFFILIATE_MODERATION,
+                            'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION,
                         )
                     );
                 }
@@ -120,7 +136,7 @@ class shopApiextensionPluginReviewsAffiliate
                 $revAffiliate = $this->reviewsAffiliateModel->getByField('review_id', $review['id']);
                 // если есть заявка и статус на модерации, то добавляем бонусы и помечаем статусом completed
                 if (!empty($revAffiliate) && $revAffiliate['state'] ==
-                    $this->reviewsAffiliateModel::STATE_AFFILIATE_MODERATION) {
+                    shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION) {
                     $this->updateBonuses($revAffiliate, $product, $review['images_count']);
                 }
             }
@@ -132,7 +148,7 @@ class shopApiextensionPluginReviewsAffiliate
 
             if (!empty($revAffiliate)) {
                 // если начислялись бонусы уже за этот отзыва, то делаем возврат
-                if ($revAffiliate['state'] == $this->reviewsAffiliateModel::STATE_AFFILIATE_COMPLETED) {
+                if ($revAffiliate['state'] == shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED) {
                     $this->cancelBonuses($revAffiliate, $product['name']);
                 }
 
@@ -144,14 +160,14 @@ class shopApiextensionPluginReviewsAffiliate
                         array(
                             'review_id' => 0,
                             'affiliate' => 0,
-                            'state' => $this->reviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                            'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
                         )
                     );
                 } else {
                     // иначе помечаем статусом удалено
                     $this->reviewsAffiliateModel->updateById(
                         $revAffiliate['id'],
-                        array('state' => $this->reviewsAffiliateModel::STATE_AFFILIATE_DELETE));
+                        array('state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_DELETE));
                 }
 
             }
@@ -182,9 +198,9 @@ class shopApiextensionPluginReviewsAffiliate
                             $order['contact_id'],
                             $item['product_id'],
                             array(
-                                $this->reviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
-                                $this->reviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
-                                $this->reviewsAffiliateModel::STATE_AFFILIATE_MODERATION
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION
                             )
                         );
 
@@ -192,14 +208,14 @@ class shopApiextensionPluginReviewsAffiliate
                     if(!empty($revAffiliates)) {
                         foreach ($revAffiliates as $ra) {
                             // если есть выполненная запись о начисление бонусов, то отменяем их
-                            if($ra['state'] == $this->reviewsAffiliateModel::STATE_AFFILIATE_COMPLETED) {
+                            if($ra['state'] == shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED) {
                                 $this->cancelBonuses($ra, $item['name']);
                             }
 
                             // обновляем статус у записи на - delete
                             $this->reviewsAffiliateModel->updateById(
                                 $ra['id'],
-                                array('state' => $this->reviewsAffiliateModel::STATE_AFFILIATE_DELETE)
+                                array('state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_DELETE)
                             );
                         }
                     }
@@ -235,9 +251,9 @@ class shopApiextensionPluginReviewsAffiliate
                             $order['contact_id'],
                             $item['product_id'],
                             array(
-                                $this->reviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
-                                $this->reviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
-                                $this->reviewsAffiliateModel::STATE_AFFILIATE_MODERATION
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
+                                shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_MODERATION
                             )
                         );
 
@@ -248,7 +264,7 @@ class shopApiextensionPluginReviewsAffiliate
                             'contact_id' => $order['contact_id'],
                             'order_id'   => $order['id'],
                             'product_id' => $item['product_id'],
-                            'sku_id' => $item['sku_id'],
+                            'sku_id'     => $item['sku_id'],
                             'state'      => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_ACTIVE,
                         ));
                     }
@@ -394,7 +410,7 @@ class shopApiextensionPluginReviewsAffiliate
                     $revAffiliate['id'],
                     array(
                         'affiliate' => $bonus,
-                        'state' => $this->reviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
+                        'state' => shopApiextensionPluginReviewsAffiliateModel::STATE_AFFILIATE_COMPLETED,
                     )
                 );
             }

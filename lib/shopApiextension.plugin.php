@@ -103,6 +103,16 @@ class shopApiextensionPlugin extends shopPlugin
     }
 
     /**
+     * Получить количество отзывов для товаров
+     * @param $product - информаци о товаре, массив
+     */
+    static public function getBonusReviewForProduct($product=null)
+    {
+        $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
+        return $apiextensionReviewsAffiliate->getBonusReviewForProduct($product);
+    }
+
+    /**
      * Получить теги товаров текущей категории
      * @param $categoryId - идентификатор категории
      * @return array|mixed
