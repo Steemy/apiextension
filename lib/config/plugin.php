@@ -23,7 +23,6 @@ return array(
         'order_action.refund' => 'orderActionRefund',
         'controller_after.shopMarketingPromoRuleEditorAction' => 'controllerAfterShopMarketingPromoRuleEditorAction',
         'controller_after.shopReviewsChangeStatusController' => 'controllerAfterShopReviewsChangeStatusController',
-        'controller_before.shopFrontendCategoryAction' => 'controllerBeforeShopFrontendCategoryAction',
     ),
     'icons'           => array
         (
