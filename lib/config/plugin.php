@@ -9,7 +9,7 @@
 return array(
     'name'            => 'Расширение функционала',
     'description'     => 'Дополнительный функционал магазина',
-    'version'         => '1.0.8',
+    'version'         => '1.0.9',
 	'vendor'          => '989788',
     'img'             => 'img/icon.svg',
     'shop_settings'   => true,
@@ -23,6 +23,7 @@ return array(
         'order_action.refund' => 'orderActionRefund',
         'controller_after.shopMarketingPromoRuleEditorAction' => 'controllerAfterShopMarketingPromoRuleEditorAction',
         'controller_after.shopReviewsChangeStatusController' => 'controllerAfterShopReviewsChangeStatusController',
+        'controller_before.shopFrontendCategoryAction' => 'controllerBeforeShopFrontendCategoryAction',
     ),
     'icons'           => array
         (

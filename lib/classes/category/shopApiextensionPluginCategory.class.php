@@ -20,8 +20,24 @@ class shopApiextensionPluginCategory
     {
         if(!$categoryId) return array();
 
+        // Start Shop-Script v.9.0.0
+        $getInfo = wa()->getConfig()->getInfo();
+        if ($getInfo['version'] >= '9.0.0') {
+            $filters = waRequest::get();
+            if (isset($filters['sort_unit'])) {
+                $sort = ifset($filters, 'sort', '');
+                if ($sort == 'price' && !isset($filters['stock_unit_id'])) {
+                    $filters['stock_unit_id'] = $filters['sort_unit'];
+                } else if ($sort == 'base_price' && !isset($filters['base_unit_id'])) {
+                    $filters['base_unit_id'] = $filters['sort_unit'];
+                }
+                unset($filters['sort_unit']);
+            }
+        }
+        // End Shop-Script v.9.0.0
+
         $collection = new shopProductsCollection('category/'.$categoryId);
-        $collection->filters(waRequest::get());
+        $collection->filters($filters);
 
         $limit = (int)waRequest::cookie('products_page_count', $limit, waRequest::TYPE_INT);
         if (!$limit || $limit < 0 || $limit > 500) {
@@ -38,8 +54,12 @@ class shopApiextensionPluginCategory
         $collection->setOptions(array(
             'overwrite_product_prices' => true,
         ));
+        $skus_field = 'skus_filtered';
+        if (wa()->getConfig()->getOption('frontend_collection_all_skus') === false) {
+            $skus_field = 'sku_filtered';
+        }
 
-        $products = $collection->getProducts('*,skus_filtered,skus_image', $offset, $limit);
+        $products = $collection->getProducts('*,skus_image,' . $skus_field, $offset, $limit);
 
         $count = $collection->count();
         $pages_count = ceil((float)$count / $limit);
@@ -63,7 +83,7 @@ class shopApiextensionPluginCategory
     {
         if(!$categoryId) return array();
 
-        $category_result = array();
+        $filtersForCategory = array();
 
         $category_model = new shopCategoryModel();
         $category = $category_model->getById($categoryId);
@@ -82,7 +102,7 @@ class shopApiextensionPluginCategory
             }
         }
 
-        $category_result['category'] = $category;
+        $filtersForCategory['category'] = $category;
         $filter_data = waRequest::get();
         $filters = array();
         $feature_map = array();
@@ -103,10 +123,19 @@ class shopApiextensionPluginCategory
             }
 
             $collection = new shopProductsCollection('category/' . $categoryId);
+
+            // Start Shop-Script v.9.0.0
+            $getInfo = wa()->getConfig()->getInfo();
+            if ($getInfo['version'] >= '9.0.0') {
+                list($stock_units_ids, $base_units_ids, $all_base_unit_ids) = $collection->getAllUnitIds();
+                $this->assignUnits($stock_units_ids, $base_units_ids, $all_base_unit_ids, $filtersForCategory);
+            }
+            // End Shop-Script v.9.0.0
+
             $category_value_ids = $collection->getFeatureValueIds(false);
 
-            foreach ($filter_ids as $k => $fid) {
-                if ($fid == 'price') {
+            foreach ($filter_ids as $fid) {
+                if (!isset($filters['price']) && ($fid == 'price' || $fid == 'base_price')) {
                     $range = $collection->getPriceRange();
                     if ($range['min'] != $range['max']) {
                         $filters['price'] = array(
@@ -114,11 +143,8 @@ class shopApiextensionPluginCategory
                             'max' => shop_currency($range['max'], null, null, false),
                         );
                     }
-                } elseif (isset($features[$fid]) && isset($category_value_ids[$fid])) {
-                    if(!empty($filter_names[$k])) {
-                        $features[$fid]['name'] = $filter_names[$k];
-                    }
-
+                }
+                elseif (isset($features[$fid]) && isset($category_value_ids[$fid])) {
                     //set existing feature code with saved filter id
                     $feature_map[$features[$fid]['code']] = $fid;
 
@@ -267,6 +293,14 @@ class shopApiextensionPluginCategory
             }
         }
 
+        if ($filters) {
+            foreach ($filters as $field => $filter) {
+                if (isset($filters[$field]['values']) && (!count($filters[$field]['values']))) {
+                    unset($filters[$field]);
+                }
+            }
+        }
+
         // myLang
         // пока тестовом режиме, надо править код в приложении myLang
         // mylangShopFrontend_categoryHandler#filters - исправить модификатор private to public
@@ -278,9 +312,18 @@ class shopApiextensionPluginCategory
             }
         }
 
-        $category_result['filters'] = $filters;
+        $filtersForCategory['filters'] = $filters;
 
-        return $category_result;
+        // Start Shop-Script v.9.0.0
+        if ($getInfo['version'] >= '9.0.0') {
+            $units = shopHelper::getUnits();
+            $filtersForCategory['fractional']['units'] = $units;
+            $filtersForCategory['fractional']['formatted_units'] = shopFrontendProductAction::formatUnits($units);
+            $filtersForCategory['fractional']['fractional_config'] = shopFrac::getFractionalConfig();
+        }
+        // End Shop-Script v.9.0.0
+
+        return $filtersForCategory;
     }
 
     /**
@@ -385,5 +428,40 @@ class shopApiextensionPluginCategory
     private function getConfig()
     {
         return waSystem::getInstance()->getConfig();
+    }
+
+    /**
+     * @param shopProductsCollection $collection
+     * @throws waException
+     */
+    protected function assignUnits($stock_units_ids, $base_units_ids, $all_base_unit_ids, &$filtersForCategory)
+    {
+        $units = array();
+        $stock_units = array();
+        $base_units = array();
+
+        $unique_units_ids = $stock_units_ids + $all_base_unit_ids;
+        $shop_units = shopHelper::getUnits(true);
+        $units = array_intersect_key($shop_units, $unique_units_ids);
+        $stock_units = array_intersect_key($shop_units, $stock_units_ids);
+        $base_units = array_intersect_key($shop_units, $base_units_ids);
+        $all_base_units = array_intersect_key($shop_units, $all_base_unit_ids);
+
+        if (count($stock_units) === 1) {
+            $filter_unit = reset($stock_units);
+        } else {
+            $filter_unit = null;
+            $filter_unit_id = waRequest::get("unit", null, "int");
+            if ($filter_unit_id && isset($units[$filter_unit_id])) {
+                $filter_unit = $units[$filter_unit_id];
+            }
+        }
+
+        $filtersForCategory['filter_unit'] = $filter_unit;
+        $filtersForCategory['units'] = $units;
+        $filtersForCategory['formatted_filter_units'] = shopFrontendProductAction::formatUnits($units);
+        $filtersForCategory['filter_base_units'] = $base_units;
+        $filtersForCategory['filter_stock_units'] = $stock_units;
+        $filtersForCategory['filter_all_base_units'] = $all_base_units;
     }
 }
