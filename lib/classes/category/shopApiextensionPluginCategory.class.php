@@ -20,10 +20,11 @@ class shopApiextensionPluginCategory
     {
         if(!$categoryId) return array();
 
+        $filters = waRequest::get();
+
         // Start Shop-Script v.9.0.0
         $getInfo = wa()->getConfig()->getInfo();
         if ($getInfo['version'] >= '9.0.0') {
-            $filters = waRequest::get();
             if (isset($filters['sort_unit'])) {
                 $sort = ifset($filters, 'sort', '');
                 if ($sort == 'price' && !isset($filters['stock_unit_id'])) {
