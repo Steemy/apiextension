@@ -199,4 +199,10 @@ class shopApiextensionPlugin extends shopPlugin
         $apiextensionReviews = new shopApiextensionPluginReviews();
         $apiextensionReviews->removeReview();
     }
+
+    static function pagination($params)
+    {
+        $apiextensionHelpersPagin = new shopApiextensionPluginHelpersPagin();
+        return $apiextensionHelpersPagin->pagination($params);
+    }
 }
