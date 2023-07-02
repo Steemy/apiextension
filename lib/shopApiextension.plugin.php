@@ -200,6 +200,12 @@ class shopApiextensionPlugin extends shopPlugin
         $apiextensionReviews->removeReview();
     }
 
+    /**
+     * Пагинация без ссылок
+     * @param $params (array ["total" => $pages_count, "attrs" =>["class" => "pagin"]])
+     * @return string
+     * @throws waException
+     */
     static function pagination($params)
     {
         $apiextensionHelpersPagin = new shopApiextensionPluginHelpersPagin();

@@ -55,7 +55,7 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 </p>
 
 <p>
-<b>shopApiextensionPlugin::pagination($params)</b> - пагинация без ссылок (аналог wa_pagination)
+ <b>shopApiextensionPlugin::pagination($params)</b> - пагинация без ссылок (аналог wa_pagination), $params=array("total" => $pages_count, "attrs" =>["class" => "pagin"])
 </p>
 
 <p>
