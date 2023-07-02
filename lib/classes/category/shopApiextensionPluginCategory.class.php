@@ -143,6 +143,9 @@ class shopApiextensionPluginCategory
                             'min' => shop_currency($range['min'], null, null, false),
                             'max' => shop_currency($range['max'], null, null, false),
                         );
+                        if (($filters['price']['max'] - $filters['price']['min']) <= 1) {
+                            $filters['price']['max'] +=2;
+                        }
                     }
                 }
                 elseif (isset($features[$fid]) && isset($category_value_ids[$fid])) {
