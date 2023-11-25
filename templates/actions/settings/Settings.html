@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{$wa_url}wa-apps/shop/plugins/apiextension/css/backend.css" />
+<link rel="stylesheet" href="{$wa_url}wa-apps/shop/plugins/apiextension/css/backend.css?v=1.1.0" />
 
 <h1>Дополнительный функционал магазина</h1>
 
@@ -24,7 +24,7 @@
     </p>
 {/literal}
 
-<div class="fields form plugins plugins_belllight">
+<div class="fields form plugins plugins_apiextension">
     <form action="" method="post">
         {$wa->csrf()}
         <ul class="tabs">
@@ -157,48 +157,62 @@
                     </div>
                 </div>
 
-                <p><br /></p>
-
-                <h2>Бонусы по категориям</h2>
-
                 {if !empty($categories)}
-                    <table class="zebra zebra-input">
-                        {foreach $categories as $c}
+                    <p><br /></p>
+                    <h2>Бонусы по категориям</h2>
+                    <div class="apiextension-bonus">
+                        <select name="" class="apiextension-bonus-categ">
+                            <option value="choose">Выберите категорию</option>
+                            {if !empty($categories)}
+                                {foreach $categories as $c}
+                                    <option value="{$c.id}" data-name="{$c.name|escape}">{"-"|str_repeat:$c.depth} {$c.name|escape}</option>
+                                {/foreach}
+                            {/if}
+                        </select>
+                        <div  class="apiextension-bonus-categ-add">
+                            <i class="icon16 add"></i> Добавить
+                        </div>
+
+                        {if !empty($settings.bonus_by_category)}
+                            <div  class="apiextension-bonus-categ-del-all">
+                                <i class="icon16 delete"></i> Очистить все
+                            </div>
+                        {/if}
+                    </div>
+                    <table class="zebra zebra-input apiextension-bonus-categ-table">
+                        {foreach $settings.bonus_by_category as $id => $c}
                             <tr>
-                                <td width="30%"{if $c.depth==0} style="font-weight:bold;"{/if}>{"- "|str_repeat:$c.depth} {$c.name|escape}</td>
+                                <td width="30%">{$categories[$id].name|escape}</td>
                                 <td>
-                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$c.id}][bonus]" value="{if !empty($settings.bonus_by_category[{$c.id}].bonus)}{$settings.bonus_by_category[{$c.id}].bonus}{/if}" placeholder="за отзыв">
-                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$c.id}][bonus_photo]" value="{if !empty($settings.bonus_by_category[{$c.id}].bonus_photo)}{$settings.bonus_by_category[{$c.id}].bonus_photo}{/if}" placeholder="с фото">
+                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$id}][bonus]" value="{if !empty($c.bonus)}{$c.bonus}{/if}" placeholder="за отзыв">
+                                    <input type="number" step="any" name="shop_plugins[bonus_by_category][{$id}][bonus_photo]" value="{if !empty($c.bonus_photo)}{$c.bonus_photo}{/if}" placeholder="с фото">
 
-                                    <select name="shop_plugins[bonus_by_category][{$c.id}][type]" style="max-width:150px;">
-                                        <option value="number"
-                                                {if !empty($settings.bonus_by_category[{$c.id}].type)
-                                        && $settings.bonus_by_category[{$c.id}].type == 'number'} selected="selected"{/if}>
-                                            число</option>
-                                        <option value="percent"
-                                                {if !empty($settings.bonus_by_category[{$c.id}].type)
-                                        && $settings.bonus_by_category[{$c.id}].type== 'percent'} selected="selected"{/if}>
-                                            % от цена товара</option>
-                                        <option value="percent_purchase"
-                                                {if !empty($settings.bonus_by_category[{$c.id}].type)
-                                        && $settings.bonus_by_category[{$c.id}].type== 'percent_purchase'} selected="selected"{/if}>
-                                            % от (цена - цена закупки)</option>
+                                    <select name="shop_plugins[bonus_by_category][{$id}][type]" style="max-width:150px;">
+                                        <option value="number"{if $c.type == 'number'} selected="selected"{/if}>
+                                            число
+                                        </option>
+                                        <option value="percent"{if $c.type== 'percent'} selected="selected"{/if}>
+                                            % от цена товара
+                                        </option>
+                                        <option value="percent_purchase" {if $c.type== 'percent_purchase'} selected="selected"{/if}>
+                                            % от (цена - цена закупки)
+                                        </option>
                                     </select>
 
-                                    <select name="shop_plugins[bonus_by_category][{$c.id}][round]" style="max-width:150px;">
-                                        <option value="round_no"
-                                                {if !empty($settings.bonus_by_category[{$c.id}].round)
-                                        && $settings.bonus_by_category[{$c.id}].round == 'round_no'} selected="selected"{/if}>
-                                            Не округлять</option>
-                                        <option value="round_up"
-                                                {if !empty($settings.bonus_by_category[{$c.id}].round)
-                                        && $settings.bonus_by_category[{$c.id}].round == 'round_up'} selected="selected"{/if}>
-                                            Округлять вверх</option>
-                                        <option value="round_down"
-                                                {if !empty($settings.bonus_by_category[{$c.id}].round)
-                                        && $settings.bonus_by_category[{$c.id}].round == 'round_down'} selected="selected"{/if}>
-                                            Округлять вниз</option>
+                                    <select name="shop_plugins[bonus_by_category][{$id}][round]" style="max-width:150px;">
+                                        <option value="round_no"{if $c.round == 'round_no'} selected="selected"{/if}>
+                                            Не округлять
+                                        </option>
+                                        <option value="round_up"{if $c.round == 'round_up'} selected="selected"{/if}>
+                                            Округлять вверх
+                                        </option>
+                                        <option value="round_down"{if $c.round == 'round_down'} selected="selected"{/if}>
+                                            Округлять вниз
+                                        </option>
                                     </select>
+                                </td>
+                                <td>
+                                    <div class="apiextension-bonus-categ-del"><i class="icon16 delete"></i></div>
                                 </td>
                             </tr>
                         {/foreach}

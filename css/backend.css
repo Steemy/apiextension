@@ -41,3 +41,9 @@ select { padding:3px 5px; }
 .plugins__reset { border-bottom:1px dashed; color:#aaa; cursor:pointer; display:inline-block; font-size:12px; font-style:italic; padding-top:0.45em; margin-bottom:10px; margin-left:20px; }
 
 table.zebra input[type="number"] { max-width:70px }
+
+.apiextension-bonus { display:flex; gap:20px; align-items:center; margin-bottom:20px; }
+.apiextension-bonus-categ-add,
+.apiextension-bonus-categ-del-all { display:flex; cursor:pointer; }
+.apiextension-bonus-categ-del { cursor:pointer; }
+.apiextension-bonus-categ-new td { background-color:#cceccc!important; }

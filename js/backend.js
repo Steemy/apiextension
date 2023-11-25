@@ -7,6 +7,7 @@
             this.initSwitcher();
             this.initSave();
             this.initTab();
+            this.initBonusCategory();
         },
         initCodeMirror: function() {
             var that = this;
@@ -81,7 +82,6 @@
                             }
                         } else if (response.status == 'ok' && response.data) {
                             btn.after('<i style="vertical-align:middle" class="icon16 yes"></i>');
-                            viewLink();
                         } else {
                             btn.after('<i style="vertical-align:middle" class="icon16 no"></i>');
                         }
@@ -94,21 +94,10 @@
                 });
                 return false;
             });
-
-            function viewLink() {
-                var belllightLink = $("#wa-app #mainmenu .tabs").find('li a[href="?plugin=belllight"]').closest('li');
-
-                if ( $(".plugins_belllight input[name='shop_plugins[status]']").prop('checked')) {
-                    if(!belllightLink.length)
-                        $("#wa-app #mainmenu .tabs li:last").before('<li class="no-tab"><a href="?plugin=belllight">Звонок (lite)</a></li>');
-                } else {
-                    belllightLink.remove();
-                }
-            }
         },
         initTab: function() {
             var that = this;
-            var pb = $('.plugins_belllight');
+            var pb = $('.plugins_apiextension');
             pb.find('.tab-content .block').hide().first().show();
 
             pb.find('.tabs>li>a').click(function (e) {
@@ -125,7 +114,54 @@
 
                 $('.CodeMirror').not('.CodeMirrorBlock .CodeMirror').hide();
             });
-        }
+        },
+        initBonusCategory: function() {
+            const that = this;
+            const bCateg = $('.apiextension-bonus-categ');
+            const bCategAdd = $('.apiextension-bonus-categ-add');
+            const bCategDelAll = $('.apiextension-bonus-categ-del-all');
+            const bCategTable = $('.apiextension-bonus-categ-table');
+
+            bCategAdd.click(function (e) {
+                const id = bCateg.val();
+                const name = bCateg.find('option:selected').data('name');
+                if(id !== 'choose') {
+                    bCategTable.prepend('' +
+                        '<tr class="apiextension-bonus-categ-new">' +
+                        '<td width="30%">'+name+'</td>' +
+                        '<td>' +
+                            '<input type="number" step="any" name="shop_plugins[bonus_by_category]['+id+'][bonus]" value="" placeholder="за отзыв"> ' +
+                            '<input type="number" step="any" name="shop_plugins[bonus_by_category]['+id+'][bonus_photo]" value="" placeholder="с фото"> ' +
+                            '<select name="shop_plugins[bonus_by_category]['+id+'][type]" style="max-width:150px;">' +
+                                '<option value="number">число</option>' +
+                                '<option value="percent">% от цена товара</option>' +
+                                '<option value="percent_purchase">% от (цена - цена закупки)</option>' +
+                            '</select> ' +
+                            '<select name="shop_plugins[bonus_by_category]['+id+'][round]" style="max-width:150px;">' +
+                                '<option value="round_no">Не округлять</option>' +
+                                '<option value="round_up">Округлять вверх</option>' +
+                                '<option value="round_down">Округлять вниз</option>' +
+                            '</select>' +
+                        '</td>' +
+                        '<td>' +
+                            '<div class="apiextension-bonus-categ-del"><i class="icon16 delete"></i></div>' +
+                        '</td>' +
+                        '</tr>');
+                }
+            });
+
+            bCategDelAll.click(function (e) {
+                if(confirm('Вы действительно хотите очистить все?')) {
+                    bCategTable.empty();
+                }
+            });
+
+            $('body').on('click', '.apiextension-bonus-categ-del', function() {
+                if(confirm('Вы действительно хотите удалить категорию?')) {
+                    $(this).closest('tr').remove();
+                }
+            });
+        },
     }
 
     $.pluginsBackend.init();
