@@ -211,4 +211,31 @@ class shopApiextensionPlugin extends shopPlugin
         $apiextensionHelpersPagin = new shopApiextensionPluginHelpersPagin();
         return $apiextensionHelpersPagin->pagination($params);
     }
+
+    /**
+     * Настройки темы
+     * @param $theme_id
+     * @param string $app
+     * @param false $values_only
+     * @return array|mixed
+     * @throws waException
+     */
+    static function getThemeSettings($theme_id, $app = "site", $values_only = false)
+    {
+        $theme = new waTheme($theme_id, $app);
+        $settings = $theme->getSettings($values_only);
+        if ($theme->parent_theme) {
+            $parent_settings = $theme->parent_theme->getSettings($values_only);
+            if ($parent_settings) {
+                if (!$values_only) {
+                    foreach ($parent_settings as $key => $v) {
+                        $parent_settings[$key]['parent'] = 1;
+                    }
+                }
+                $settings = $settings + $parent_settings;
+            }
+        }
+
+        return $settings;
+    }
 }
