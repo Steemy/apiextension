@@ -89,6 +89,8 @@ class shopApiextensionPluginCategory
         $category_model = new shopCategoryModel();
         $category = $category_model->getById($categoryId);
 
+        if (!$category) return array();
+
         $category['frontend_url'] = wa()->getRouteUrl('shop/frontend/category', [
             'category_url' => $category['full_url'],
         ], false);

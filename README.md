@@ -63,5 +63,9 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 </p>
 
 <p>
+ <b>shopApiextensionPlugin::getProductFromPromos($promo_id)</b> - получить товары из промо маркетинга
+</p>
+
+<p>
 <b>Модерация отзывов</b> - достаточно включить настройках плагина и будет модерация отзывов, редактирование полей и удаление отзыва полностью
 </p>

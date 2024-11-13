@@ -238,4 +238,28 @@ class shopApiextensionPlugin extends shopPlugin
 
         return $settings;
     }
+
+    /**
+    * Товары из промо маркетинга
+    * @param $promo_id
+    * @return array|mixed
+    * @throws waException
+    */
+    static function getProductFromPromos($promo_id)
+    {
+        $apiextensionPromos = new shopApiextensionPluginPromos();
+        return $apiextensionPromos->getProductFromPromos($promo_id);
+    }
+
+    /**
+     * Фильтр для поиска
+     * @param string $filter
+     * @return array|mixed
+     * @throws waException
+     */
+    static function getSearchFilters($filter)
+    {
+        $apiextensionSearch = new shopApiextensionPluginSearch();
+        return $apiextensionSearch->getSearchFilters($filter);
+    }
 }

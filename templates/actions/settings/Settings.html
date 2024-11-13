@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{$wa_url}wa-apps/shop/plugins/apiextension/css/backend.css?v=1.1.0" />
+<link rel="stylesheet" href="{$wa_url}wa-apps/shop/plugins/apiextension/css/backend.css?v=1.2.0" />
 
 <h1>Дополнительный функционал магазина</h1>
 
@@ -21,28 +21,25 @@
         <b>shopApiextensionPlugin::getTagsByCategory($categoryId)</b> - теги товаров текущей категории, так же можно настроить кеширование тегов, <a href="https://developers.webasyst.ru/docs/features/cache/" target="_blank">инструкция от webasyst</a><br />
         <b>shopApiextensionPlugin::pagination($params)</b> - пагинация без ссылок (аналог wa_pagination), $params=array("total" => $pages_count, "attrs" =>["class" => "pagin"])<br />
         <b>shopApiextensionPlugin::getThemeSettings($theme_id, $app, $values_only)</b> - получить настройки темы приложения<br />
+        <b>shopApiextensionPlugin::getProductFromPromos($promo_id)</b> - получить товары из промо маркетинга<br />
         <b>Модерация отзывов</b> - достаточно включить настройках плагина и будет модерация отзывов, редактирование полей и удаление отзыва полностью<br />
     </p>
 {/literal}
 
 <div class="fields form plugins plugins_apiextension">
-    <form action="" method="post">
+    <form action="?plugin=apiextension&module=settings&action=save" method="post" id="plugins-settings-form">
         {$wa->csrf()}
         <ul class="tabs">
             <li class="selected"><a href="#/apiextension/">[`Settings`]</a></li>
             <li><a href="#/apiextension/">Бонусы за отзывы</a></li>
         </ul>
         <div class="tab-content">
-            <div class="block top-padded">
+            <div class="block top-padded fields-group custom-mt-16">
                 <div class="field">
                     <div class="name">Доп. поля для отзывов:</div>
                     <div class="value">
                         <div class="ibutton-checkbox">
-                            <ul class="menu-h">
-                                <li><span id="switcher-off-label">Нет</span></li>
-                                <li><input class="switcher" type="checkbox" name="shop_plugins[additional_fields_review]"{if $settings.additional_fields_review} checked="checked"{/if} value="1" /></li>
-                                <li><span id="switcher-on-label">Да</span></li>
-                            </ul>
+														<input class="switcher" type="checkbox" name="shop_plugins[additional_fields_review]"{if $settings.additional_fields_review} checked="checked"{/if} value="1" />
                             <p></p>
                         </div>
                     </div>
@@ -51,11 +48,7 @@
                     <div class="name">Редактировать поля в отзывах:</div>
                     <div class="value">
                         <div class="ibutton-checkbox">
-                            <ul class="menu-h">
-                                <li><span id="switcher-off-label">Нет</span></li>
-                                <li><input class="switcher" type="checkbox" name="shop_plugins[edit_fields_in_reviews]"{if $settings.edit_fields_in_reviews} checked="checked"{/if} value="1" /></li>
-                                <li><span id="switcher-on-label">Да</span></li>
-                            </ul>
+														<input class="switcher" type="checkbox" name="shop_plugins[edit_fields_in_reviews]"{if $settings.edit_fields_in_reviews} checked="checked"{/if} value="1" />
                             <p class="hint">возможность редактировать текст написанного отзыва</p>
                         </div>
                     </div>
@@ -64,29 +57,20 @@
                     <div class="name">Удалять отзывы:</div>
                     <div class="value">
                         <div class="ibutton-checkbox">
-                            <ul class="menu-h">
-                                <li><span id="switcher-off-label">Нет</span></li>
-                                <li><input class="switcher" type="checkbox" name="shop_plugins[delete_reviews]"{if $settings.delete_reviews} checked="checked"{/if} value="1" /></li>
-                                <li><span id="switcher-on-label">Да</span></li>
-                            </ul>
+														<input class="switcher" type="checkbox" name="shop_plugins[delete_reviews]"{if $settings.delete_reviews} checked="checked"{/if} value="1" />
                             <p class="hint">возможность полностью удалить отзывы из админки</p>
                         </div>
                     </div>
                 </div>
-                <p><br /></p>
             </div>
 
-            <div class="block top-padded">
+            <div class="block top-padded fields-group custom-mt-16">
                 <p class="hint">Бонус за отзыв работает только после того как заказ будет выполнен, если клиент раньше оставит отзыв, то начисления не будет</p>
                 <div class="field">
                     <div class="name">Бонусы за отзывы</div>
                     <div class="value">
                         <div class="ibutton-checkbox">
-                            <ul class="menu-h">
-                                <li><span id="switcher-off-label">Нет</span></li>
-                                <li><input class="switcher" type="checkbox" name="shop_plugins[bonus_for_review_status]"{if $settings.bonus_for_review_status} checked="checked"{/if} value="1" /></li>
-                                <li><span id="switcher-on-label">Да</span></li>
-                            </ul>
+														<input class="switcher" type="checkbox" name="shop_plugins[bonus_for_review_status]"{if $settings.bonus_for_review_status} checked="checked"{/if} value="1" />
                             <p></p>
                         </div>
                     </div>
@@ -171,19 +155,19 @@
                             {/if}
                         </select>
                         <div  class="apiextension-bonus-categ-add">
-                            <i class="icon16 add"></i> Добавить
+													<span class="icon middle"><i class="fas fa-plus-circle text-green"></i><i class="icon16 add"></i></span> Добавить
                         </div>
 
                         {if !empty($settings.bonus_by_category)}
                             <div  class="apiextension-bonus-categ-del-all">
-                                <i class="icon16 delete"></i> Очистить все
+																<i class="fas fa-trash text-red"></i><i class="icon16 delete"></i> Очистить все
                             </div>
                         {/if}
                     </div>
                     <table class="zebra zebra-input apiextension-bonus-categ-table">
                         {foreach $settings.bonus_by_category as $id => $c}
                             <tr>
-                                <td width="30%">{$categories[$id].name|escape}</td>
+                                <td width="24%">{$categories[$id].name|escape}</td>
                                 <td>
                                     <input type="number" step="any" name="shop_plugins[bonus_by_category][{$id}][bonus]" value="{if !empty($c.bonus)}{$c.bonus}{/if}" placeholder="за отзыв">
                                     <input type="number" step="any" name="shop_plugins[bonus_by_category][{$id}][bonus_photo]" value="{if !empty($c.bonus_photo)}{$c.bonus_photo}{/if}" placeholder="с фото">
@@ -213,24 +197,27 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <div class="apiextension-bonus-categ-del"><i class="icon16 delete"></i></div>
+                                    <div class="apiextension-bonus-categ-del">
+																			<i class="fas fa-trash text-red"></i><i class="icon16 delete"></i>
+																		</div>
                                 </td>
                             </tr>
                         {/foreach}
                     </table>
                 {/if}
-                <p><br /></p>
             </div>
         </div>
 
-        <div id="s-product-edit-save-panel" style="display: block;">
-            <div class="block bordered-top" style="padding-left:225px;">
-                <input type="submit" class="button green plugins__save" value="Сохранить" style="margin-right:10px;">
-                <em class="errormsg" style="display:inline-block;"></em>
+        <div class="field">
+            <div class="value submit">
+							<div class="custom-pl-16">
+								<input type="submit" class="button green" value="Сохранить">
+								<span id="plugins-settings-form-status" style="display:none"><!-- message placeholder --></span>
+							</div>
             </div>
         </div>
     </form>
 </div>
 
 
-<script src="{$wa_url}wa-apps/shop/plugins/apiextension/js/backend.js"></script>
+<script src="{$wa_url}wa-apps/shop/plugins/apiextension/js/backend.js?v=1.2.0"></script>

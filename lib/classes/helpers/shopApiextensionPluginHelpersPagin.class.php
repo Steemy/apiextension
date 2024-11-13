@@ -11,6 +11,7 @@ class shopApiextensionPluginHelpersPagin
     /**
      * Пагинация без ссылок
      * @param $params (array ["total" => $pages_count, "attrs" =>["class" => "pagin"]])
+     * @return string
      * @throws waException
      */
     public function pagination($params)

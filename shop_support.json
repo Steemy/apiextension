@@ -1,4 +1,5 @@
 {
-  "support_premium": "no",
-  "support_premium_description": "..."
+  "support_premium": "yes",
+  "support_premium_description": "Поддерживается.",
+  "support_premium_description_en_US": "Supported."
 }

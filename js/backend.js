@@ -4,8 +4,6 @@
         codeMirrorArr:'',
         init: function() {
             this.initCodeMirror();
-            this.initSwitcher();
-            this.initSave();
             this.initTab();
             this.initBonusCategory();
         },
@@ -34,64 +32,6 @@
                     parent.find('.CodeMirror').slideToggle();
                 }
 
-                return false;
-            });
-        },
-        initSwitcher: function() {
-            $('.switcher').iButton({
-                labelOn: "", labelOff: "", className: 'mini'
-            }).change(function() {
-                var onLabelSelector = '#' + this.id + '-on-label',
-                    offLabelSelector = '#' + this.id + '-off-label';
-                var additinalField = $(this).closest('.ibutton-checkbox').next('.onopen');
-                if (!this.checked) {
-                    if (additinalField.length) {
-                        additinalField.hide();
-                    }
-                    $(onLabelSelector).addClass('unselected');
-                    $(offLabelSelector).removeClass('unselected');
-                } else {
-                    if (additinalField.length) {
-                        additinalField.css('display', 'inline-block');
-                    }
-                    $(onLabelSelector).removeClass('unselected');
-                    $(offLabelSelector).addClass('unselected');
-                }
-            });
-        },
-        initSave: function() {
-            $('.plugins__save').click(function() {
-                var btn = $(this);
-                var form = btn.closest('form');
-                var errormsg = form.find('.errormsg');
-                errormsg.text('');
-                btn.next("i.icon16").remove();
-                btn.attr('disabled', 'disabled').after('<i style="vertical-align:middle" class="icon16 loading"></i>');
-                $.ajax({
-                    url: "?plugin=apiextension&module=settings&action=save",
-                    data: form.serializeArray(),
-                    dataType: "json",
-                    type: "post",
-                    success: function(response) { 
-                        btn.removeAttr('disabled').next().remove();
-                        if (typeof response.errors != 'undefined') {
-                            if (typeof response.errors.messages != 'undefined') {
-                                $.each(response.errors.messages, function(i, v) {
-                                    errormsg.append(v + "<br />");
-                                });
-                            }
-                        } else if (response.status == 'ok' && response.data) {
-                            btn.after('<i style="vertical-align:middle" class="icon16 yes"></i>');
-                        } else {
-                            btn.after('<i style="vertical-align:middle" class="icon16 no"></i>');
-                        }
-                    },
-                    error: function() {
-                        errormsg.text($_('Что-то не так.'));
-                        btn.removeAttr('disabled').next().remove();
-                        btn.after('<i style="vertical-align:middle" class="icon16 no"></i>');
-                    }
-                });
                 return false;
             });
         },
@@ -128,7 +68,7 @@
                 if(id !== 'choose') {
                     bCategTable.prepend('' +
                         '<tr class="apiextension-bonus-categ-new">' +
-                        '<td width="30%">'+name+'</td>' +
+                        '<td width="24%">'+name+'</td>' +
                         '<td>' +
                             '<input type="number" step="any" name="shop_plugins[bonus_by_category]['+id+'][bonus]" value="" placeholder="за отзыв"> ' +
                             '<input type="number" step="any" name="shop_plugins[bonus_by_category]['+id+'][bonus_photo]" value="" placeholder="с фото"> ' +

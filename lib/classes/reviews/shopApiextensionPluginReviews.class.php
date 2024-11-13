@@ -89,10 +89,10 @@ class shopApiextensionPluginReviews
 
         $additionalFields = array();
         foreach ($params['reviews'] as $r) {
-            $additionalFields[$r['id']]['apiextension_recommend'] = $r['apiextension_recommend'];
-            $additionalFields[$r['id']]['apiextension_experience'] = $r['apiextension_experience'];
-            $additionalFields[$r['id']]['apiextension_dignity'] = $r['apiextension_dignity'];
-            $additionalFields[$r['id']]['apiextension_limitations'] = $r['apiextension_limitations'];
+            $additionalFields[$r['id']]['apiextension_recommend'] = $r['apiextension_recommend'] ? $r['apiextension_recommend'] : 0;
+            $additionalFields[$r['id']]['apiextension_experience'] = $r['apiextension_experience'] ? $r['apiextension_experience'] : "";
+            $additionalFields[$r['id']]['apiextension_dignity'] = $r['apiextension_dignity'] ? $r['apiextension_dignity'] : "";
+            $additionalFields[$r['id']]['apiextension_limitations'] = $r['apiextension_limitations'] ? $r['apiextension_limitations'] : "";
             $additionalFields[$r['id']]['apiextension_votes'] = json_decode($r['apiextension_votes'], true);
         }
 
@@ -101,6 +101,7 @@ class shopApiextensionPluginReviews
             $options = json_encode(array(
                 "additionalFields" => $additionalFields,
                 "delete" => $this->settings['delete_reviews'],
+                "ui_version" => wa()->whichUI(),
             ));
 
             $version = $this->settings['plugin_info']['version'];

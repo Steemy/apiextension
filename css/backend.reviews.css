@@ -25,3 +25,8 @@
 .apiextension-review__not-recommend {
     color:red;
 }
+.apiextension-review__edit,
+.apiextension-review__save {
+    cursor: pointer;
+    color: green;
+}
