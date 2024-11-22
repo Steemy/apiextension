@@ -253,13 +253,13 @@ class shopApiextensionPlugin extends shopPlugin
 
     /**
      * Фильтр для поиска
-     * @param string $filter
+     * @param string $featuresIds
      * @return array|mixed
      * @throws waException
      */
-    static function getSearchFilters($filter)
+    static function getSearchFilters($featuresIds)
     {
         $apiextensionSearch = new shopApiextensionPluginSearch();
-        return $apiextensionSearch->getSearchFilters($filter);
+        return $apiextensionSearch->getSearchFilters($featuresIds);
     }
 }
