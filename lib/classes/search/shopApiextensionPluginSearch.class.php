@@ -16,9 +16,17 @@ class shopApiextensionPluginSearch
      */
     public function getSearchFilters($featuresIds)
     {
-        $query = waRequest::get('query');
+        $tag = waRequest::param('tag');
+
+        if ($tag) {
+            $query = 'tag/'.$tag;
+        } else {
+            $query = waRequest::get('query');
+            $query = 'search/query='.str_replace('&', '\&', $query);
+        }
+
         try {
-            $collection = new shopProductsCollection('search/query='.str_replace('&', '\&', $query));
+            $collection = new shopProductsCollection($query);
         } catch (waDbException $dbe) {
             return array();
         }
