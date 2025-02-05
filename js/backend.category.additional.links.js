@@ -108,7 +108,7 @@
               that.additionalLinks.push({
                 id: idNew,
                 name: nameVal,
-                link: linkVal,
+                url: linkVal,
               });
               that.linksWrapper.append(`
                 <div class="button" type="button" data-id="${idNew}">
@@ -127,7 +127,7 @@
                   return {
                     id: e.id,
                     name: nameVal,
-                    link: linkVal,
+                    url: linkVal,
                   }
                 }
                 return e;
