@@ -262,4 +262,24 @@ class shopApiextensionPlugin extends shopPlugin
         $apiextensionSearch = new shopApiextensionPluginSearch();
         return $apiextensionSearch->getSearchFilters($featuresIds);
     }
+
+    /**
+     * HOOK backend_category_dialog backend
+     */
+    public function backendProdCategoryDialog(&$settings)
+    {
+        $apiextensionCategoryDialog = new shopApiextensionPluginCategoryDialog();
+        return array(
+            'top' => $apiextensionCategoryDialog->backendProdCategoryDialog($settings),
+        );
+    }
+
+    /**
+     * @param array $category
+     */
+    public function categorySaveHandler($category)
+    {
+        $apiextensionCategoryDialog = new shopApiextensionPluginCategoryDialog();
+        $apiextensionCategoryDialog->categorySaveHandler($category);
+    }
 }

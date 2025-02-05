@@ -23,6 +23,7 @@
         <b>shopApiextensionPlugin::getThemeSettings($theme_id, $app, $values_only)</b> - получить настройки темы приложения<br />
         <b>shopApiextensionPlugin::getProductFromPromos($promo_id)</b> - получить товары из промо маркетинга<br />
         <b>Модерация отзывов</b> - достаточно включить настройках плагина и будет модерация отзывов, редактирование полей и удаление отзыва полностью<br />
+				<b>Дополнительные ссылки в категориях</b> - включаемая опция, дает возможность добавлять дополнительные ссылки у категории и сохранять их в дополнительных параметрах категории - $category.params.apiextension_additional_links<br />
     </p>
 {/literal}
 
@@ -62,6 +63,15 @@
                         </div>
                     </div>
                 </div>
+								<div class="field">
+										<div class="name">Дополнительные ссылки в категориях:</div>
+										<div class="value">
+												<div class="ibutton-checkbox">
+														<input class="switcher" type="checkbox" name="shop_plugins[additional_links]"{if $settings.additional_links} checked="checked"{/if} value="1" />
+														<p class="hint">возможность добавлять дополнительные ссылки для категорий</p>
+												</div>
+										</div>
+								</div>
             </div>
 
             <div class="block top-padded fields-group custom-mt-16">
