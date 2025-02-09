@@ -92,17 +92,17 @@
                     '</div>' +
                 '</div>';
 
+                const recommendNumber = Number(aFields[id]['apiextension_recommend']);
                 let recommend = '<span class="apiextension-review__recommend">Не важно</span>';
-                if ( aFields[id]['apiextension_recommend'] === 1) {
+                if (recommendNumber === 1) {
                   recommend = '<span class="apiextension-review__not-recommend">Не рекомендую</span>';
-                } else if ( aFields[id]['apiextension_recommend'] === 2) {
+                } else if ( recommendNumber === 2) {
                   recommend = '<span class="apiextension-review__recommend">Рекомендую</span>';
                 }
 
-                const selected0 = aFields[id]['apiextension_recommend'] !== 1
-                  && aFields[id]['apiextension_recommend'] !== 2 ? 'selected' : '';
-                const selected1 = aFields[id]['apiextension_recommend'] === 1 ? 'selected' : '';
-                const selected2 = aFields[id]['apiextension_recommend'] === 2 ? 'selected' : '';
+                const selected = function (value) {
+                  return recommendNumber === value ? ' selected' : '';
+                }
 
                 formAdditionalFields = formAdditionalFields +
                 '<div class="apiextension-review__item">' +
@@ -112,9 +112,9 @@
                     '</span>' +
                     '<div style="display:none;">' +
                         '<select name="apiextension_recommend">' +
-                            '<option value="0"' + selected0 + '>Не важно</option>' +
-                            '<option value="2"' + selected2 + '>Рекомендую</option>' +
-                            '<option value="1"' + selected1 + '>Не рекомендую</option>' +
+                            '<option value="0"' + selected(0) + '>Не важно</option>' +
+                            '<option value="2"' + selected(2) + '>Рекомендую</option>' +
+                            '<option value="1"' + selected(1) + '>Не рекомендую</option>' +
                         '</select>' +
                         '<span class="apiextension-review__save apiextension-review__save-recommend" title="сохранить">' +
                             '<i class="icon16 yes"></i> <i class="fa fa-save"></i>' +
