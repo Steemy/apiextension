@@ -207,6 +207,7 @@
             }
 
             event.form_data['apiextension_additional_links'] = links;
+            event.form_data['apiextension_additional_links_ui2'] = true;
           });
         });
       }
