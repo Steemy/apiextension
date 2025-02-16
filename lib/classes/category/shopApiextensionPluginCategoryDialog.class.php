@@ -62,18 +62,23 @@ class shopApiextensionPluginCategoryDialog
         }
 
         if (!empty($category['id'])) {
-            $additionalLinks = waRequest::post('apiextension_additional_links', array());
+            $additionalLinksUI2 = waRequest::post('apiextension_additional_links_ui2', false);
 
-            $category_id = $category['id'];
-            $name = 'apiextension_additional_links';
-            $value = $additionalLinks ? json_encode($additionalLinks) : 0;
+            //check UI2
+            if ($additionalLinksUI2) {
+                $additionalLinks = waRequest::post('apiextension_additional_links', array());
 
-            $categoryParamsModel = new shopCategoryParamsModel();
+                $category_id = $category['id'];
+                $name = 'apiextension_additional_links';
+                $value = $additionalLinks ? json_encode($additionalLinks) : 0;
 
-            if ($value) {
-                $categoryParamsModel->insert(compact('category_id', 'name', 'value'), 1);
-            } else {
-                $categoryParamsModel->deleteByField(compact('category_id', 'name'));
+                $categoryParamsModel = new shopCategoryParamsModel();
+
+                if ($value) {
+                    $categoryParamsModel->insert(compact('category_id', 'name', 'value'), 1);
+                } else {
+                    $categoryParamsModel->deleteByField(compact('category_id', 'name'));
+                }
             }
         }
     }
