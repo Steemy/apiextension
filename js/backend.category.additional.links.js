@@ -73,7 +73,7 @@
         if (type === 'edit') {
           const links = that.additionalLinks.filter(e => Number(e.id) === Number(id))[0] ?? [];
           name.val(links.name ?? '');
-          link.val(links.link ?? '');
+          link.val(links.url ?? '');
         }
 
         name.add(link).on('focus', function () {
