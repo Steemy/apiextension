@@ -18,7 +18,7 @@ class shopApiextensionPluginCategory
      */
     public function categoryProducts($categoryId, $limit=NULL)
     {
-        if (!$categoryId) return array();
+        if(!$categoryId) return array();
 
         $filters = waRequest::get();
 
@@ -82,7 +82,7 @@ class shopApiextensionPluginCategory
      */
     public function filtersForCategory($categoryId)
     {
-        if (!$categoryId) return array();
+        if(!$categoryId) return array();
 
         $filtersForCategory = array();
 

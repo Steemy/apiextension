@@ -7,9 +7,6 @@
 
 <p><b>Полный список апи:</b></p>
 
-<p>
-  <b>$wa->shop->apiextensionPlugin->getSeofilterForCategory($category_id)</b> - получить seo filters для категории
-</p>
 
 <p>
   <b>shopApiextensionPlugin::affiliateBonus($contact_id)</b> - количество бонусов авторизованного пользователя
@@ -41,7 +38,7 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 <p>
 <b>Голосвание в отзывах</b> - апи рест - apiextension/reviews/vote/ на добавление или удаление голосования<br />
 принимает параметры _csrf, review_id, apiextension_reviews_vote = array('type'  => 'like' || 'dislike', 'value' => 1 || 0)<br />
-<b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contact_id)</b> - получить текущее голосование для клиента
+<b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
 </p>
 
 <p>
@@ -54,7 +51,7 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 </p>
 
 <p>
-<b>shopApiextensionPlugin::getTagsByCategory($category_id)</b> - теги товаров текущей категории, так же можно настроить кеширование тегов, <a href="https://developers.webasyst.ru/docs/features/cache/" target="_blank">инструкция от webasyst</a>
+<b>shopApiextensionPlugin::getTagsByCategory($categoryId)</b> - теги товаров текущей категории, так же можно настроить кеширование тегов, <a href="https://developers.webasyst.ru/docs/features/cache/" target="_blank">инструкция от webasyst</a>
 </p>
 
 <p>
@@ -70,7 +67,7 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 </p>
 
 <p>
- <b>shopApiextensionPlugin::getSearchFilters($features_ids)</b> - фильтр для поиска
+ <b>shopApiextensionPlugin::getSearchFilters($featuresIds)</b> - фильтр для поиска
 </p>
 
 <p>

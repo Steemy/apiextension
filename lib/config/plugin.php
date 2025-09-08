@@ -9,7 +9,7 @@
 return array(
     'name'            => 'Расширение функционала',
     'description'     => 'Дополнительный функционал магазина',
-    'version'         => '1.4.0',
+    'version'         => '1.3.0',
 	'vendor'          => '989788',
     'img'             => 'img/icon.svg',
     'shop_settings'   => true,

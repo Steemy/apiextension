@@ -3,23 +3,14 @@
 /**
  * Plugin helper
  *
- * @author Steemy, created by 10.02.2025
+ * @author Steemy, created by 30.11.2021
  */
 
 class shopApiextensionPluginViewHelper extends waPluginViewHelper
 {
 
-  /**
-   * Получить seoFilters для категории
-   * @param $categoryId - id категории
-   * @param bool $absolute
-   * @return array
-   * @throws waException
-   */
-    public function getSeofilterForCategory($categoryId, $absolute = false)
+    public function helperOne()
     {
-      $shopApiextensionPluginSeofilter = new shopApiextensionPluginSeofilter();
-      return $shopApiextensionPluginSeofilter->getSeofilterForCategory($categoryId, $absolute);
+        echo "test helper";
     }
-
 }
