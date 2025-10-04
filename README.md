@@ -77,3 +77,8 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 <p>
 <b>Дополнительные ссылки в категориях</b> - включаемая опция, дает возможность добавлять дополнительные ссылки у категории и сохранять их в дополнительных параметрах категории (Только для UI2.0) - $category.params.apiextension_additional_links
 </p>
+
+<p>
+<b>Умный фильтр</b> - апи рест - apiextension/category/smartfilters/ получить фильтры для блокировки<br />
+принимает параметры post category_id ,filters, request_data<br />
+</p>

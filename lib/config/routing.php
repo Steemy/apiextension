@@ -8,4 +8,5 @@
 
 return array(
     'apiextension/reviews/vote/' => 'frontend/reviewsVote',
+    'apiextension/category/smartfilters/' => 'frontend/smartFilters',
 );

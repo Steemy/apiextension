@@ -159,7 +159,7 @@ class shopApiextensionPlugin extends shopPlugin
     /**
      * HOOK order_action.complete
      */
-    public function orderActionСomplete($params)
+    public function orderActionComplete($params)
     {
         // При переводе заказа в статус выполнено, делаем запись о возможности получить бонусы за отзыв
         $apiextensionReviewsAffiliate = new shopApiextensionPluginReviewsAffiliate();
