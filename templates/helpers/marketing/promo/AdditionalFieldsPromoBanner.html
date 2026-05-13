@@ -1,67 +1,103 @@
 <div id="apiextension">
-    {if !empty($banners)}
-        {foreach $banners as $i => $banner}
-            <div class="field">
-                <div class="name">Ссылка на видео</div>
-                <div class="value">
-                    <input type="text" value="{$banner.apiextension_video|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_video]">
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">Вывод описания</div>
-                <div class="value">
-                    <select name="{$rule_name}[rule_params][banners][{$i}][apiextension_output_des]">
-                        {html_options options=[
-                                'left' => 'Выводить слева',
-                                'right' => 'Выводить справа'
-                            ] selected=$banner.apiextension_output_des|default:'right'}
-                    </select>
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">Текст над заголовком</div>
-                <div class="value">
-                    <input type="text" value="{$banner.apiextension_header|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_header]">
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">Цена от</div>
-                <div class="value">
-                    <input type="text" value="{$banner.apiextension_price|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_price]">
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">Текст кнопки</div>
-                <div class="value">
-                    <input type="text" value="{$banner.apiextension_button|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button]">
-                </div>
-            </div>
-						<div class="field">
-								<div class="name">Класс кнопки</div>
-								<div class="value">
-										<input type="text" value="{$banner.apiextension_button_class|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_class]">
-								</div>
-						</div>
-						<div class="field">
-								<div class="name">Ссылка доп. кнопки</div>
-								<div class="value">
-										<input type="text" value="{$banner.apiextension_button_additional_link|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_link]">
-								</div>
-						</div>
-						<div class="field">
-								<div class="name">Текст доп. кнопки</div>
-								<div class="value">
-										<input type="text" value="{$banner.apiextension_button_additional_text|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_text]">
-								</div>
-						</div>
-						<div class="field">
-								<div class="name">Класс доп. кнопки</div>
-								<div class="value">
-										<input type="text" value="{$banner.apiextension_button_additional_class|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_class]">
-								</div>
-						</div>
-        {/foreach}
-    {/if}
+  {if !empty($banners)}
+    {foreach $banners as $i => $banner}
+      <div class="field">
+        <div class="name">Ссылка на видео</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_video|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_video]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Вывод описания</div>
+        <div class="value">
+          <select name="{$rule_name}[rule_params][banners][{$i}][apiextension_output_des]">
+            {html_options options=[
+              'left' => 'Выводить слева',
+              'right' => 'Выводить справа'
+            ] selected=$banner.apiextension_output_des|default:'right'}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Текст над заголовком</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_header|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_header]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Цена от</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_price|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_price]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Текст кнопки</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Класс кнопки</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_class|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_class]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Ссылка доп. кнопки 1</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_link|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_link]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Текст доп. кнопки 1</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_text|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_text]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Класс доп. кнопки 1</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_class|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_class]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Ссылка доп. кнопки 2</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_link_2|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_link_2]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Текст доп. кнопки 2</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_text_2|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_text_2]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Класс доп. кнопки 2</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_class_2|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_class_2]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Ссылка доп. кнопки 3</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_link_3|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_link_3]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Текст доп. кнопки 3</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_text_3|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_text_3]">
+        </div>
+      </div>
+      <div class="field">
+        <div class="name">Класс доп. кнопки 3</div>
+        <div class="value">
+          <input type="text" value="{$banner.apiextension_button_additional_class_3|escape|default:''}" name="{$rule_name}[rule_params][banners][{$i}][apiextension_button_additional_class_3]">
+        </div>
+      </div>
+    {/foreach}
+  {/if}
 </div>
 
 <script>
@@ -88,10 +124,20 @@
                     .after(apiextension.find('[name$="[banners][{$i}][apiextension_button]"]').closest('.field'));
 
 
+                countdown
+                  .after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_class_3]"]').closest('.field'))
+                  .after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_text_3]"]').closest('.field'))
+                  .after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_link_3]"]').closest('.field'));
+
           			countdown
-                  	.after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_class]"]').closest('.field'))
-                  	.after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_text]"]').closest('.field'))
-                  	.after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_link]"]').closest('.field'));
+                  	.after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_class_2]"]').closest('.field'))
+                  	.after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_text_2]"]').closest('.field'))
+                  	.after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_link_2]"]').closest('.field'));
+
+                countdown
+                  .after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_class]"]').closest('.field'))
+                  .after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_text]"]').closest('.field'))
+                  .after(apiextension.find('[name$="[banners][{$i}][apiextension_button_additional_link]"]').closest('.field'));
 
 
             {/foreach}

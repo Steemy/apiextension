@@ -105,6 +105,7 @@ class shopApiextensionPluginCategory
             }
         }
 
+        $getInfo = wa()->getConfig()->getInfo();
         $filtersForCategory['category'] = $category;
         $filter_data = waRequest::get();
         $filters = array();
@@ -128,7 +129,6 @@ class shopApiextensionPluginCategory
             $collection = new shopProductsCollection('category/' . $categoryId);
 
             // Start Shop-Script v.9.0.0
-            $getInfo = wa()->getConfig()->getInfo();
             if ($getInfo['version'] >= '9.0.0') {
                 list($stock_units_ids, $base_units_ids, $all_base_unit_ids) = $collection->getAllUnitIds();
                 $this->assignUnits($stock_units_ids, $base_units_ids, $all_base_unit_ids, $filtersForCategory);
