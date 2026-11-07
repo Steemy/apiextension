@@ -7,25 +7,29 @@
 
 <p><b>Полный список апи:</b></p>
 
-
 <p>
-  <b>shopApiextensionPlugin::affiliateBonus($contact_id)</b> - количество бонусов авторизованного пользователя
+  <b>Внимание:</b> старые вызовы методов через <b>shopApiextensionPlugin::method()</b> помечены как <b>deprecated</b>.
+  Используйте новые методы через хелпер: <b>$wa->shop->apiextensionPlugin->method()</b>.
 </p>
 
 <p>
-  <b>shopApiextensionPlugin::reviewsCount($product_ids)</b> - количество отзывов для товаров
+  <b>$wa->shop->apiextensionPlugin->affiliateBonus($contact_id)</b> - количество бонусов авторизованного пользователя
 </p>
 
 <p>
-  <b>shopApiextensionPlugin::categoryProducts($category_id, $limit)</b> - товары категории, в фильтрации товаров участвуют все гет параметры фильтра и пагинации
+  <b>$wa->shop->apiextensionPlugin->reviewsCount($product_ids)</b> - количество отзывов для товаров
 </p>
 
 <p>
-  <b>shopApiextensionPlugin::productImages($product_ids)</b> - фото для товаров
+  <b>$wa->shop->apiextensionPlugin->categoryProducts($category_id, $limit)</b> - товары категории, в фильтрации товаров участвуют все гет параметры фильтра и пагинации
 </p>
 
 <p>
-  <b>shopApiextensionPlugin::filtersForCategory($category_id)</b> - активный фильтр товаров для категории
+  <b>$wa->shop->apiextensionPlugin->productImages($product_ids)</b> - фото для товаров
+</p>
+
+<p>
+  <b>$wa->shop->apiextensionPlugin->filtersForCategory($category_id)</b> - активный фильтр товаров для категории
 </p>
 
 <p>
@@ -38,36 +42,36 @@ $review.apiextension_experience, $review.apiextension_dignity, $review.apiextens
 <p>
 <b>Голосвание в отзывах</b> - апи рест - apiextension/reviews/vote/ на добавление или удаление голосования<br />
 принимает параметры _csrf, review_id, apiextension_reviews_vote = array('type'  => 'like' || 'dislike', 'value' => 1 || 0)<br />
-<b>shopApiextensionPlugin::getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
+<b>$wa->shop->apiextensionPlugin->getReviewsVote($reviewIds, $contactId)</b> - получить текущее голосование для клиента
 </p>
 
 <p>
-<b>shopApiextensionPlugin::getProductsForReviewBonus()</b> - товары за которые можно получить бонус за отзыв<br />
+<b>$wa->shop->apiextensionPlugin->getProductsForReviewBonus()</b> - товары за которые можно получить бонус за отзыв<br />
 Бонусы за отзыв о товара можно получить только когда заказ в статусе completed, при отмене заказа, баллы списываются у клиента. Если клиенту был начислен бонус за отзыв и потом удалить отзыв в административной панели, то будут навсегда списаны баллы за отзыв у клиента, заявка на получение бонусов снова будет активна, если не вышел срок.
 </p>
 
 <p>
-<b>shopApiextensionPlugin::getBonusReviewForProduct($product)</b> - поулчить массив бонусов за конкретный товар для динамического расчета
+<b>$wa->shop->apiextensionPlugin->getBonusReviewForProduct($product)</b> - поулчить массив бонусов за конкретный товар для динамического расчета
 </p>
 
 <p>
-<b>shopApiextensionPlugin::getTagsByCategory($categoryId)</b> - теги товаров текущей категории, так же можно настроить кеширование тегов, <a href="https://developers.webasyst.ru/docs/features/cache/" target="_blank">инструкция от webasyst</a>
+<b>$wa->shop->apiextensionPlugin->getTagsByCategory($categoryId)</b> - теги товаров текущей категории, так же можно настроить кеширование тегов, <a href="https://developers.webasyst.ru/docs/features/cache/" target="_blank">инструкция от webasyst</a>
 </p>
 
 <p>
- <b>shopApiextensionPlugin::pagination($params)</b> - пагинация без ссылок (аналог wa_pagination), $params=array("total" => $pages_count, "attrs" =>["class" => "pagin"])
+ <b>$wa->shop->apiextensionPlugin->pagination($params)</b> - пагинация без ссылок (аналог wa_pagination), $params=array("total" => $pages_count, "attrs" =>["class" => "pagin"])
 </p>
 
 <p>
- <b>shopApiextensionPlugin::getThemeSettings($theme_id, $app, $values_only)</b> - получить настройки темы приложения
+ <b>$wa->shop->apiextensionPlugin->getThemeSettings($theme_id, $app, $values_only)</b> - получить настройки темы приложения
 </p>
 
 <p>
- <b>shopApiextensionPlugin::getProductFromPromos($promo_id)</b> - получить товары из промо маркетинга
+ <b>$wa->shop->apiextensionPlugin->getProductFromPromos($promo_id)</b> - получить товары из промо маркетинга
 </p>
 
 <p>
- <b>shopApiextensionPlugin::getSearchFilters($featuresIds)</b> - фильтр для поиска
+ <b>$wa->shop->apiextensionPlugin->getSearchFilters($featuresIds)</b> - фильтр для поиска
 </p>
 
 <p>

@@ -14,6 +14,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @return bool|mixed
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::affiliateBonus()
      */
     static function affiliateBonus($contactId=null)
     {
@@ -27,6 +28,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @return array|mixed
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::reviewsCount()
      */
     static public function reviewsCount($productIds)
     {
@@ -40,6 +42,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @return array
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::productImages()
      */
     static function productImages($productIds)
     {
@@ -54,6 +57,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @param $limit - товаров на странице
      * @return array
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::categoryProducts()
      */
     static function categoryProducts($categoryId, $limit=NULL)
     {
@@ -68,6 +72,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @throws ReflectionException
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::filtersForCategory()
      */
     static function filtersForCategory($categoryId)
     {
@@ -82,6 +87,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @return array
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::getReviewsVote()
      */
     static function getReviewsVote($reviewIds, $contactId = null)
     {
@@ -95,6 +101,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @return array
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::getProductsForReviewBonus()
      */
     static function getProductsForReviewBonus($contactId)
     {
@@ -105,6 +112,7 @@ class shopApiextensionPlugin extends shopPlugin
     /**
      * Получить количество отзывов для товаров
      * @param $product - информаци о товаре, массив
+     * @deprecated use shopApiextensionPluginViewHelper::getBonusReviewForProduct()
      */
     static public function getBonusReviewForProduct($product=null)
     {
@@ -118,6 +126,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @return array|mixed
      * @throws waDbException
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::getTagsByCategory()
      */
     static function getTagsByCategory($categoryId)
     {
@@ -205,6 +214,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @param $params (array ["total" => $pages_count, "attrs" =>["class" => "pagin"]])
      * @return string
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::pagination()
      */
     static function pagination($params)
     {
@@ -219,6 +229,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @param false $values_only
      * @return array|mixed
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::getThemeSettings()
      */
     static function getThemeSettings($theme_id, $app = "site", $values_only = false)
     {
@@ -244,6 +255,7 @@ class shopApiextensionPlugin extends shopPlugin
     * @param $promo_id
     * @return array|mixed
     * @throws waException
+    * @deprecated use shopApiextensionPluginViewHelper::getProductFromPromos()
     */
     static function getProductFromPromos($promo_id)
     {
@@ -256,6 +268,7 @@ class shopApiextensionPlugin extends shopPlugin
      * @param string $featuresIds
      * @return array|mixed
      * @throws waException
+     * @deprecated use shopApiextensionPluginViewHelper::getSearchFilters()
      */
     static function getSearchFilters($featuresIds)
     {
