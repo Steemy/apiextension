@@ -29,22 +29,22 @@ class shopApiextensionPluginCategorySmartFilters
     return $this->processFilters($requestData);
   }
 
-  public function getSmartFilters2($categoryId, $filters)
-  {
-    if (!$categoryId || !$filters) {
-      return array();
-    }
-
-    $this->initialize($categoryId, $filters);
-
-    $requestData = waRequest::get();
-
-    if (empty($requestData) || empty($this->productIds)) {
-      return array();
-    }
-
-    return $this->processFilters($requestData);
-  }
+//  public function getSmartFilters2($categoryId, $filters)
+//  {
+//    if (!$categoryId || !$filters) {
+//      return array();
+//    }
+//
+//    $this->initialize($categoryId, $filters);
+//
+//    $requestData = waRequest::get();
+//
+//    if (empty($requestData) || empty($this->productIds)) {
+//      return array();
+//    }
+//
+//    return $this->processFilters($requestData);
+//  }
 
   /**
    * Initialize class properties
