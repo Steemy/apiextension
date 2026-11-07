@@ -55,9 +55,9 @@ class shopApiextensionPluginCategorySmartFilters
    */
   private function initialize($categoryId, $filters)
   {
+    $this->featureModel = new shopFeatureModel();
     $this->processFilterConfiguration($filters);
     $this->loadProductIdsForCategory($categoryId);
-    $this->featureModel = new shopFeatureModel();
   }
 
   /**
@@ -85,9 +85,45 @@ class shopApiextensionPluginCategorySmartFilters
    */
   private function loadProductIdsForCategory($categoryId)
   {
-    $collection = new shopProductsCollection('category/' . $categoryId);
-    $products = $collection->getProducts('id', 0, 1000);
-    $this->productIds = array_keys($products);
+    $categoryId = (int)$categoryId;
+    $categoryModel = new shopCategoryModel();
+    $category = $categoryModel->getById($categoryId);
+
+    if (!$category) {
+      $this->productIds = array();
+      return;
+    }
+
+    // Динамическая категория — только через коллекцию (без лимита)
+    if ((int)$category['type'] !== 0) {
+      $collection = new shopProductsCollection('category/' . $categoryId);
+      $count = $collection->count();
+      $products = $count ? $collection->getProducts('id', 0, $count) : array();
+      $this->productIds = array_keys($products);
+      return;
+    }
+
+    // Статическая категория (+ подкатегории, если включено «показывать товары подкатегорий»)
+    $categoryIds = array($categoryId);
+    if (!empty($category['include_sub_categories'])) {
+      $sub = $categoryModel->query(
+    "SELECT id FROM shop_category WHERE left_key >= :l AND right_key <= :r AND type = 0",
+        array('l' => $category['left_key'], 'r' => $category['right_key'])
+      )->fetchAll(null, true);
+
+      if ($sub) {
+        $categoryIds = array_map('intval', $sub);
+      }
+    }
+
+    $ids = $categoryModel->query(
+  "SELECT DISTINCT cp.product_id FROM shop_category_products cp
+      JOIN shop_product tsp ON tsp.id = cp.product_id
+      WHERE cp.category_id IN (:ids) AND tsp.status = 1",
+      array('ids' => $categoryIds)
+    )->fetchAll(null, true);
+
+    $this->productIds = array_map('intval', $ids);
   }
 
   /**
@@ -218,11 +254,11 @@ class shopApiextensionPluginCategorySmartFilters
     $priceMax = $data['price_max'] ?? null;
 
     if ($priceMin !== null && $priceMin !== '') {
-      $conditions[] = 'p.price >= ' . (int)$priceMin;
+      $conditions[] = 'tsp.price >= ' . (int)$priceMin;
     }
 
     if ($priceMax !== null && $priceMax !== '') {
-      $conditions[] = 'p.price <= ' . (int)$priceMax;
+      $conditions[] = 'tsp.price <= ' . (int)$priceMax;
     }
 
     unset($data['price_min'], $data['price_max']);
@@ -324,14 +360,14 @@ class shopApiextensionPluginCategorySmartFilters
     $filterConfig = $this->filters[$featureCode];
 
     $join = sprintf(
-      "LEFT JOIN shop_product_features %s ON tsp.id = %s.product_id AND %s.feature_id = %d",
+      "JOIN shop_product_features %s ON tsp.id = %s.product_id AND %s.feature_id = %d",
       $alias,
       $alias,
       $alias,
       (int)$filterConfig['id']
     );
 
-    $where = sprintf("%s.feature_value_id IN (%s)", $alias, implode(',', $values));
+    $where = sprintf("%s.feature_value_id IN (%s)", $alias, implode(',', array_map('intval', $values)));
 
     return [$join, $where];
   }
@@ -348,7 +384,7 @@ class shopApiextensionPluginCategorySmartFilters
     $whereConditions[] = 'tsp.id IN (:product_ids)';
 
     $sql = sprintf(
-      "SELECT tsp.id FROM shop_product tsp %s WHERE %s GROUP BY tsp.id",
+      "SELECT DISTINCT tsp.id FROM shop_product tsp %s WHERE %s",
       implode(' ', $joinConditions),
       implode(' AND ', $whereConditions)
     );
@@ -367,9 +403,8 @@ class shopApiextensionPluginCategorySmartFilters
    */
   private function getUsedFeatureValues($productIds, $featureCode)
   {
-    $sql = "SELECT DISTINCT product_id, feature_value_id 
-                FROM shop_product_features 
-                WHERE product_id IN (:product_ids) AND feature_id = :feature_id";
+    $sql = "SELECT DISTINCT product_id, feature_value_id FROM shop_product_features 
+            WHERE product_id IN (:product_ids) AND feature_id = :feature_id";
 
     $result = $this->featureModel->query($sql, [
       'product_ids' => $productIds,
